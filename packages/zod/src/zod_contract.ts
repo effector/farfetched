@@ -1,4 +1,4 @@
-import { type ZodType, type TypeOf } from 'zod';
+import { type ZodType, type TypeOf } from 'zod/v3';
 import { type Contract } from '@farfetched/core';
 
 /**
