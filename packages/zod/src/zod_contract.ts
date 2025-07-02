@@ -22,7 +22,7 @@ function zodContract<T extends ZodTypeV3<any, any, any>>(
         return [];
       }
 
-      return validation.error.errors.map((e) => {
+      return validation.error.issues.map((e) => {
         const path = e.path.join('.');
         return path !== '' ? `${e.message}, path: ${path}` : e.message;
       });
