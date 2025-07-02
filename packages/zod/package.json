@@ -7,12 +7,12 @@
   "license": "MIT",
   "repository": "https://github.com/igorkamyshev/farfetched",
   "devDependencies": {
-    "zod": "^3.19",
-    "@farfetched/core": "workspace:*"
+    "@farfetched/core": "workspace:*",
+    "zod": "^3.25.0"
   },
   "peerDependencies": {
-    "zod": "^3.19",
-    "@farfetched/core": "workspace:*"
+    "@farfetched/core": "workspace:*",
+    "zod": "^3.25.0"
   },
   "scripts": {
     "test:run": "vitest run --typecheck",
