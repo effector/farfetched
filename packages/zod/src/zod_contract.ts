@@ -1,4 +1,5 @@
-import { type ZodType as ZodTypeV3, type TypeOf as TypeOfV3 } from 'zod/v3';
+import { type ZodType as ZodTypeV3 } from 'zod/v3';
+import { type $ZodType as ZodTypeV4, safeParse } from 'zod/v4/core';
 import { type Contract } from '@farfetched/core';
 
 /**
@@ -7,17 +8,20 @@ import { type Contract } from '@farfetched/core';
  *
  * @param {ZodTypeV3} data Zod Contract for valid data
  */
-function zodContract<T extends ZodTypeV3<any, any, any>>(
-  data: T
-): Contract<unknown, TypeOfV3<T>> {
+function zodContract<T>(
+  data: ZodTypeV3<T> | ZodTypeV4<T>
+): Contract<unknown, T> {
   function isData(prepared: unknown): prepared is T {
+    if ("_zod" in data) return safeParse(data, prepared).success;
     return data.safeParse(prepared).success;
   }
 
   return {
     isData,
     getErrorMessages(raw) {
-      const validation = data.safeParse(raw);
+      const validation = ("_zod" in data)
+        ? safeParse(data, raw)
+        : data.safeParse(raw);
       if (validation.success) {
         return [];
       }
