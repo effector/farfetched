@@ -8,7 +8,7 @@
   "repository": "https://github.com/igorkamyshev/farfetched",
   "devDependencies": {
     "@farfetched/core": "workspace:*",
-    "zod": "^3.25.0"
+    "zod": "^3.25.67"
   },
   "peerDependencies": {
     "@farfetched/core": "workspace:*",

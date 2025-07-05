@@ -258,10 +258,10 @@ importers:
   packages/zod:
     specifiers:
       '@farfetched/core': workspace:*
-      zod: ^3.25.0
+      zod: ^3.25.67
     devDependencies:
       '@farfetched/core': link:../core
-      zod: 3.25.0
+      zod: 3.25.67
 
 packages:
 
@@ -7294,6 +7294,6 @@ packages:
     resolution: {integrity: sha512-LYjZsEDhCdYET9ikFu6dVPGp2YH9DegXjdJToSzD9rO6fy4qiRYFoyEYwps88OseJlPyl2NOe2iJuhEhL7IpEA==}
     dev: false
 
-  /zod/3.25.0:
-    resolution: {integrity: sha512-ficnZKUW0mlNivqeJkosTEkGbJ6NKCtSaOHGx5aXbtfeWMdRyzXLbAIn19my4C/KB7WPY/p9vlGPt+qpOp6c4Q==}
+  /zod/3.25.67:
+    resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
     dev: true
