@@ -1,9 +1,11 @@
-import { z as zod } from 'zod';
+import { z as zod_v3 } from 'zod/v3';
 import { describe, test, expect } from 'vitest';
 
 import { zodContract } from '../zod_contract';
 
-describe('zod/zodContract short', () => {
+describe('zod/zodContract short (zod v3)', () => {
+  const zod = zod_v3;
+
   test('interprets invalid response as error', () => {
     const contract = zodContract(zod.string());
 
