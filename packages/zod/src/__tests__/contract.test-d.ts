@@ -1,11 +1,11 @@
 import { describe, test, expectTypeOf } from 'vitest';
-import { z as zod } from 'zod';
+import { z as zodV3 } from 'zod/v3';
 
 import { zodContract } from '../zod_contract';
 
-describe('zodContract', () => {
+describe('zodContract (zod v3)', () => {
   test('string', () => {
-    const stringContract = zodContract(zod.string());
+    const stringContract = zodContract(zodV3.string());
 
     const smth: unknown = null;
 
@@ -17,14 +17,14 @@ describe('zodContract', () => {
 
   test('complex object', () => {
     const complexContract = zodContract(
-      zod.tuple([
-        zod.object({
-          x: zod.number(),
-          y: zod.literal(false),
-          k: zod.set(zod.string()),
+      zodV3.tuple([
+        zodV3.object({
+          x: zodV3.number(),
+          y: zodV3.literal(false),
+          k: zodV3.set(zodV3.string()),
         }),
-        zod.literal('literal'),
-        zod.literal(42),
+        zodV3.literal('literal'),
+        zodV3.literal(42),
       ])
     );
 
@@ -60,15 +60,15 @@ describe('zodContract', () => {
   });
 
   test('branded type', () => {
-    const BrandedContainer = zod.object({
-      branded: zod.string().brand<'Branded'>(),
+    const BrandedContainer = zodV3.object({
+      branded: zodV3.string().brand<'Branded'>(),
     });
     const brandedContract = zodContract(BrandedContainer);
 
     const smth: unknown = { branded: 'branded' };
 
     if (brandedContract.isData(smth)) {
-      expectTypeOf(smth).toEqualTypeOf<zod.infer<typeof BrandedContainer>>();
+      expectTypeOf(smth).toEqualTypeOf<zodV3.infer<typeof BrandedContainer>>();
     }
   });
 });
