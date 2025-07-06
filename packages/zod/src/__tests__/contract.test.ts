@@ -300,7 +300,9 @@ describe('zod/zodContract short (zod v4-mini)', () => {
         zod.object({
           x: zod.number(),
           y: zod.literal(true),
-          k: zod.set(zod.string(), { error: 'Invalid input: expected set of strings' }),
+          k: zod.set(zod.string(), {
+            error: 'Invalid input: expected set of strings',
+          }),
         }),
         zod.literal('Uhm?'),
         zod.literal(42),

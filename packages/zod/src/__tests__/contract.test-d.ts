@@ -210,7 +210,9 @@ describe('zodContract (zod v4-mini)', () => {
     const smth: unknown = { branded: 'branded' };
 
     if (brandedContract.isData(smth)) {
-      expectTypeOf(smth).toEqualTypeOf<zodV4mini.infer<typeof BrandedContainer>>();
+      expectTypeOf(smth).toEqualTypeOf<
+        zodV4mini.infer<typeof BrandedContainer>
+      >();
     }
   });
 });
