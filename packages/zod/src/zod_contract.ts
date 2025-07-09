@@ -13,7 +13,7 @@ type Output<T extends ZodAnyType> = T extends ZodTypeV4
     ? TypeOfV3<T>
     : never;
 function isZodV4(schema: unknown): schema is ZodTypeV4 {
-  return !!schema && typeof schema === "object" && "_zod" in schema;
+  return !!schema && typeof schema === 'object' && '_zod' in schema;
 }
 
 /**
@@ -33,8 +33,9 @@ function zodContract<T extends ZodAnyType>(
   return {
     isData,
     getErrorMessages(raw) {
-      const validation =
-        isZodV4(data) ? safeParse(data, raw) : data.safeParse(raw);
+      const validation = isZodV4(data)
+        ? safeParse(data, raw)
+        : data.safeParse(raw);
       if (validation.success) {
         return [];
       }
