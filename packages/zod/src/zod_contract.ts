@@ -12,6 +12,9 @@ type Output<T extends ZodAnyType> = T extends ZodTypeV4
   : T extends ZodTypeV3
     ? TypeOfV3<T>
     : never;
+function isZodV4(schema: unknown): schema is ZodTypeV4 {
+  return !!schema && typeof schema === "object" && "_zod" in schema;
+}
 
 /**
  * Transforms Zod contracts for `data` to internal Contract.
@@ -23,7 +26,7 @@ function zodContract<T extends ZodAnyType>(
   data: T
 ): Contract<unknown, Output<T>> {
   function isData(prepared: unknown): prepared is Output<T> {
-    if ('_zod' in data) return safeParse(data, prepared).success;
+    if (isZodV4(data)) return safeParse(data, prepared).success;
     return data.safeParse(prepared).success;
   }
 
@@ -31,7 +34,7 @@ function zodContract<T extends ZodAnyType>(
     isData,
     getErrorMessages(raw) {
       const validation =
-        '_zod' in data ? safeParse(data, raw) : data.safeParse(raw);
+        isZodV4(data) ? safeParse(data, raw) : data.safeParse(raw);
       if (validation.success) {
         return [];
       }
