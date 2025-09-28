@@ -129,12 +129,6 @@ export interface RemoteOperation<
         meta: ExecutionMeta;
       }>;
     } & ExtraLowLevelAPI;
-    experimentalAPI?: {
-      attach: <Source, NewParams>(config: {
-        source: Store<Source>;
-        mapParams: (params: NewParams, source: Source) => Params;
-      }) => any;
-    };
   };
 }
 
