@@ -1,5 +1,3 @@
-import { attach, type Store } from 'effector';
-
 import { createRemoteOperation } from '../remote_operation/create_remote_operation';
 import {
   readonly,
@@ -11,7 +9,6 @@ import { type Mutation, MutationSymbol } from './type';
 import { type Contract } from '../contract/type';
 import { type InvalidDataError } from '../errors/type';
 import { type Validator } from '../validation/type';
-import { type ExecutionMeta } from '../remote_operation/type';
 
 export interface SharedMutationFactoryConfig {
   name?: string;
@@ -68,43 +65,6 @@ export function createHeadlessMutation<
   };
   const unitShapeProtocol = () => unitShape;
 
-  // Experimental API, won't be exposed as protocol for now
-  const attachProtocol = <NewParams, Source>({
-    source,
-    mapParams,
-  }: {
-    source: Store<Source>;
-    mapParams: (params: NewParams, source: Source) => Params;
-  }) => {
-    const attachedMutation = createHeadlessMutation<
-      NewParams,
-      Data,
-      ContractData,
-      MappedData,
-      unknown,
-      MapDataSource,
-      ValidationSource
-    >(config as any);
-
-    attachedMutation.__.lowLevelAPI.dataSourceRetrieverFx.use(
-      attach({
-        source,
-        mapParams: (
-          { params, ...rest }: { params: NewParams; meta: ExecutionMeta },
-          sourceValue
-        ): { params: Params; meta: ExecutionMeta } => ({
-          params: (mapParams
-            ? mapParams(params, sourceValue)
-            : params) as Params,
-          ...rest,
-        }),
-        effect: operation.__.lowLevelAPI.dataSourceRetrieverFx,
-      })
-    );
-
-    return attachedMutation;
-  };
-
   // -- Public API --
 
   return {
@@ -125,7 +85,7 @@ export function createHeadlessMutation<
       finally: readonly(operation.finished.finally),
       skip: readonly(operation.finished.skip),
     },
-    __: { ...operation.__, experimentalAPI: { attach: attachProtocol } },
+    __: operation.__,
     '@@unitShape': unitShapeProtocol,
   };
 }

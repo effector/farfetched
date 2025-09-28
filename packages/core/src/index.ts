@@ -25,9 +25,6 @@ export { timeout } from './timeout/timeout';
 // Update public API
 export { update } from './update/update';
 
-// Attach public API
-export { attachOperation } from './attach/attach';
-
 // Cache public API
 export { cache } from './cache/cache';
 export {
