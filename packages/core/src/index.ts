@@ -36,6 +36,7 @@ export { localStorageCache } from './cache/adapters/local_storage';
 export { sessionStorageCache } from './cache/adapters/session_storage';
 export { voidCache } from './cache/adapters/void';
 export { createCacheAdapter } from './cache/adapters/instance';
+export { attachObservability } from './cache/adapters/observability';
 
 // Exposed libs
 export {
