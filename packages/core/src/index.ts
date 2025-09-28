@@ -55,6 +55,7 @@ export {
   type RemoteOperationResult,
   type RemoteOperationError,
   type RemoteOperationParams,
+  type ExecutionMeta,
 } from './remote_operation/type';
 export { onAbort } from './remote_operation/on_abort';
 export { Meta, Result } from './remote_operation/store_meta';
