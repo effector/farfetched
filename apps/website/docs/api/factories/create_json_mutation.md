@@ -39,14 +39,3 @@ Config fields:
     - `headers`: <Badge type="tip" text="since v0.13" /> raw response headers
 
   - `status.expected`: `number` or `Array<number>` of expected HTTP status codes, if the response status code is not in the list, the mutation will be treated as failed
-
-- `concurrency?`: concurrency settings for the [_Mutation_](/api/primitives/mutation)
-  ::: danger Deprecation warning
-
-  This field is deprecated since [v0.12](/releases/0-12) and will be removed in v0.14. Use [`concurrency` operator](/api/operators/concurrency) instead.
-
-  Please read [this ADR](/adr/concurrency) for more information and migration guide.
-
-  :::
-
-  - `abort?`: [_Event_](https://effector.dev/en/api/effector/event/) after calling which all in-flight requests will be aborted
