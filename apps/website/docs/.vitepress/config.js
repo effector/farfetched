@@ -209,10 +209,6 @@ export default withMermaid(
               { text: 'concurrency', link: '/api/operators/concurrency' },
               { text: 'applyBarrier', link: '/api/operators/apply_barrier' },
               { text: 'update', link: '/api/operators/update' },
-              {
-                text: 'attachOperation',
-                link: '/api/operators/attach_operation',
-              },
               { text: 'connectQuery', link: '/api/operators/connect_query' },
             ],
           },
