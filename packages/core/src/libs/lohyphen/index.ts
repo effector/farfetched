@@ -9,3 +9,4 @@ export { divide } from './divide';
 export { get } from './field';
 export { uniq } from './uniq';
 export { Mutex } from './mutex';
+export { drain } from './drain';

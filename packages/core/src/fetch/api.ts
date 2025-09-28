@@ -1,7 +1,7 @@
 import { attach, createEffect } from 'effector';
 
 import { normalizeStaticOrReactive, StaticOrReactive } from '../libs/patronus';
-import { NonOptionalKeys } from '../libs/lohyphen';
+import { drain, NonOptionalKeys } from '../libs/lohyphen';
 import {
   ConfigurationError,
   HttpError,
@@ -153,15 +153,21 @@ export function createApiRequest<
         throw cause;
       });
 
-      // We cannot read body of the response twice (prepareFx and throw preparationError)
-      const clonedResponse = response.clone();
+      const [forPrepare, forError] = response.body?.tee() ?? [null, null];
 
-      const prepared = await prepareFx(response).catch(async (cause) => {
-        throw preparationError({
-          response: await clonedResponse.text(),
-          reason: cause?.message ?? null,
-        });
-      });
+      const prepared = await prepareFx(new Response(forPrepare, response)).then(
+        async (result) => {
+          await drain(forError);
+
+          return result;
+        },
+        async (cause) => {
+          throw preparationError({
+            response: await new Response(forError).text(),
+            reason: cause?.message ?? null,
+          });
+        }
+      );
 
       if (config.response.status) {
         const expected = Array.isArray(config.response.status.expected)

@@ -15,8 +15,8 @@ describe('fetch/api.response.prepare', () => {
     mapBody: () => 'some_body',
   };
 
-  test('pass oriiginal response to preparation', async () => {
-    const extractMock = vi.fn().mockImplementation((t) => t);
+  test('pass original response to preparation', async () => {
+    const extractMock = vi.fn().mockImplementation((t) => t.text());
 
     const apiCallFx = createApiRequest({
       request,
@@ -34,7 +34,7 @@ describe('fetch/api.response.prepare', () => {
       params: {},
     });
 
-    expect(extractMock).toHaveBeenCalledWith(ORIGINAL_RESPONSE);
+    expect(extractMock).toReturnWith('ok');
   });
 });
 
