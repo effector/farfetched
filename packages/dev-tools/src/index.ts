@@ -8,6 +8,7 @@ import { appStarted } from './model/init';
 export function attachFarfetchedDevTools(config?: {
   scope?: Scope;
   element?: Element;
+  logErrorsToConsole?: boolean;
 }) {
   let root: Element;
   if (config?.element) {
@@ -17,7 +18,10 @@ export function attachFarfetchedDevTools(config?: {
     document.body.appendChild(root);
   }
 
-  appStarted({ scope: config?.scope });
+  appStarted({
+    scope: config?.scope,
+    config: { logErrorsToConsole: config?.logErrorsToConsole ?? false },
+  });
 
   createApp(App).mount(root);
 }
