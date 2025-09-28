@@ -40,12 +40,6 @@ Config fields:
     - `params`: params which were passed to the [_Query_](/api/primitives/query)
     - `headers`: <Badge type="tip" text="since v0.13" /> raw response headers
 
-  - `strategy?`: available values:
-    - `TAKE_EVERY` execute every request
-    - `TAKE_FIRST` skip all requests if there is a pending one
-    - `TAKE_LATEST` (**default value**) cancel all pending requests and execute the latest one
-  - `abort?`: [_Event_](https://effector.dev/en/api/effector/event/) after calling which all in-flight requests will be aborted
-
 ## Showcases
 
 - [Real-world showcase with SolidJS around JSON API](https://github.com/igorkamyshev/farfetched/tree/master/apps/showcase-solid-real-world-rick-morty/)

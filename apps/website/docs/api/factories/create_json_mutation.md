@@ -39,5 +39,3 @@ Config fields:
     - `headers`: <Badge type="tip" text="since v0.13" /> raw response headers
 
   - `status.expected`: `number` or `Array<number>` of expected HTTP status codes, if the response status code is not in the list, the mutation will be treated as failed
-
-  - `abort?`: [_Event_](https://effector.dev/en/api/effector/event/) after calling which all in-flight requests will be aborted
