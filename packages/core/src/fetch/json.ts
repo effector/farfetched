@@ -12,6 +12,7 @@ import {
   StaticOnlyRequestConfig,
 } from './api';
 import { mergeRecords } from './lib';
+import { drain } from 'libs/lohyphen';
 
 export type JsonObject = Record<string, Json>;
 
@@ -121,7 +122,7 @@ async function checkEmptyResponse(
 
   const bodyAsText = await new Response(clonedBody).text();
   if (bodyAsText.length === 0) {
-    await originalBody.cancel();
+    await drain(originalBody);
 
     return [true, null];
   }

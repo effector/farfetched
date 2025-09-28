@@ -1,7 +1,7 @@
 import { attach, createEffect } from 'effector';
 
 import { normalizeStaticOrReactive, StaticOrReactive } from '../libs/patronus';
-import { NonOptionalKeys } from '../libs/lohyphen';
+import { drain, NonOptionalKeys } from '../libs/lohyphen';
 import {
   ConfigurationError,
   HttpError,
@@ -157,7 +157,8 @@ export function createApiRequest<
 
       const prepared = await prepareFx(new Response(forPrepare, response)).then(
         async (result) => {
-          await forError?.cancel();
+          await drain(forError);
+
           return result;
         },
         async (cause) => {
