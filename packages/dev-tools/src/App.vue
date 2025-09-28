@@ -4,6 +4,7 @@ import { useUnit, useVModel } from 'effector-vue/composition';
 import { $visible, show, hide } from './view-model/visibility';
 import { operationHeaders, $operationsList } from './view-model/list';
 import { $search } from './view-model/search';
+import './view-model/console';
 import FloatingButton from './ui/FloatingButton.vue';
 import Modal from './ui/Modal.vue';
 import Table from './ui/Table.vue';
