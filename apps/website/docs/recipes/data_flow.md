@@ -142,7 +142,7 @@ const userQuery = createJsonQuery({
 This is optional stage. If any of the previous stages fail, you can define a mapper to transform the error to the desired format before it reaches `.finished.failure` [_Event_](https://effector.dev/en/api/effector/event/) and `.$error` [_Store_](https://effector.dev/en/api/effector/store/).
 
 ::: warning
-Error mappers have to be pure function, so they are not allowed to throw an error. If the mapper throws an error, the data-flow stops immediately without any error handling.
+Error mappers have to be pure functions, so they are not allowed to throw an error. If the mapper throws an error, the data-flow stops immediately without any error handling.
 :::
 
 Since error mapper is a [_Sourced_](/api/primitives/sourced), it's possible to add some extra data from the application to the mapping process. For example, it could be localized error messages:
