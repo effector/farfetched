@@ -449,6 +449,7 @@ describe('retry with query', () => {
         {
           "error": [Error: Sorry, attempt 1],
           "meta": {
+            "responseMeta": undefined,
             "stale": false,
             "stopErrorPropagation": false,
           },

@@ -42,8 +42,10 @@ export function createHeadlessMutation<
     ContractData,
     MappedData,
     Error,
+    Error | InvalidDataError,
     null,
     MapDataSource,
+    void,
     ValidationSource
   >({
     name: name ?? getFactoryName(),

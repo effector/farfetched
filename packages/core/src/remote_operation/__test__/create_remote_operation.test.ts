@@ -476,6 +476,7 @@ describe('RemoteOperation and onAbort callback', () => {
               ],
             },
             "meta": {
+              "responseMeta": undefined,
               "stale": false,
               "stopErrorPropagation": false,
             },
@@ -529,6 +530,7 @@ describe('RemoteOperation and onAbort callback', () => {
               ],
             },
             "meta": {
+              "responseMeta": undefined,
               "stale": false,
               "stopErrorPropagation": false,
             },

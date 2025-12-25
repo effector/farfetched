@@ -86,6 +86,7 @@ export function createJsonQuery<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigWithParams<
@@ -102,6 +103,11 @@ export function createJsonQuery<
         { result: Data; params: Params; headers?: Headers },
         TransformedData,
         DataSource
+      >;
+      mapFailure?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        unknown,
+        FailureSource
       >;
       validate?: Validator<TransformedData, Params, ValidationSource>;
     };
@@ -117,6 +123,7 @@ export function createJsonQuery<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigWithParams<
@@ -135,6 +142,11 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
+      mapFailure?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, Params, ValidationSource>;
     };
   }
@@ -148,6 +160,7 @@ export function createJsonQuery<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigWithParams<
@@ -160,6 +173,11 @@ export function createJsonQuery<
   > & {
     response: {
       contract: Contract<unknown, Data>;
+      mapFailure?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<Data, Params, ValidationSource>;
     };
   }
@@ -172,6 +190,7 @@ export function createJsonQuery<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigWithParams<
@@ -185,6 +204,11 @@ export function createJsonQuery<
     initialData?: Data;
     response: {
       contract: Contract<unknown, Data>;
+      mapFailure?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<Data, Params, ValidationSource>;
     };
   }
@@ -199,6 +223,7 @@ export function createJsonQuery<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigNoParams<
@@ -215,6 +240,11 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
+      mapFailure?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, void, ValidationSource>;
     };
   }
@@ -228,6 +258,7 @@ export function createJsonQuery<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigNoParams<
@@ -245,6 +276,11 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
+      mapFailure?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, void, ValidationSource>;
     };
   }
@@ -257,6 +293,7 @@ export function createJsonQuery<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigNoParams<
@@ -268,6 +305,11 @@ export function createJsonQuery<
   > & {
     response: {
       contract: Contract<unknown, Data>;
+      mapFailure?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<Data, void, ValidationSource>;
     };
   }
@@ -279,6 +321,7 @@ export function createJsonQuery<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigNoParams<
@@ -291,6 +334,11 @@ export function createJsonQuery<
     initialData?: Data;
     response: {
       contract: Contract<unknown, Data>;
+      mapFailure?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<Data, void, ValidationSource>;
     };
   }
@@ -317,11 +365,14 @@ export function createJsonQuery(config: any) {
     any,
     any,
     any,
+    any,
+    any,
     any
   >({
     initialData: config.initialData,
     contract: config.response.contract ?? unknownContract,
     mapData: config.response.mapData ?? (({ result }) => result),
+    mapFailure: config.response.mapFailure,
     validate: config.response.validate,
     enabled: config.enabled,
     name: config.name,

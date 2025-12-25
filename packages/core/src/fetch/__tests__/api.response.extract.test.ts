@@ -82,7 +82,10 @@ describe('fetch/api.response.exceptions', () => {
       });
 
       expect(effectWatcher.listeners.onFailData).toHaveBeenCalledWith(
-        preparationError({ response: 'ok', reason: 'oops' })
+        expect.objectContaining({
+          error: preparationError({ response: 'ok', reason: 'oops' }),
+          responseMeta: expect.objectContaining({ headers: expect.anything() }),
+        })
       );
     }
   );
