@@ -82,7 +82,8 @@ export function createRemoteOperation<
   const startWithMeta = createEvent<{ params: Params; meta: ExecutionMeta }>();
 
   // Default mapFailure to identity function
-  const effectiveMapFailure = mapFailure ?? (({ error }) => error as MappedError);
+  const effectiveMapFailure =
+    mapFailure ?? (({ error }) => error as MappedError);
 
   const applyContractFx = createContractApplier<Params, Data, ContractData>(
     contract

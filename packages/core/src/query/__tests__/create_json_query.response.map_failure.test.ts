@@ -88,7 +88,9 @@ describe('remote_data/query/json.response.map_failure', () => {
 
     await allSettled(query.start, { scope, params: 'test_params' });
 
-    expect(scope.getState(query.$error)).toMatchObject({ params: 'test_params' });
+    expect(scope.getState(query.$error)).toMatchObject({
+      params: 'test_params',
+    });
   });
 
   describe('headers in mapFailure', () => {
@@ -174,10 +176,7 @@ describe('remote_data/query/json.response.map_failure', () => {
 
       const scope = fork({
         handlers: [
-          [
-            fetchFx,
-            () => Promise.reject(new TypeError('Network error')),
-          ],
+          [fetchFx, () => Promise.reject(new TypeError('Network error'))],
         ],
       });
 
@@ -245,4 +244,3 @@ describe('remote_data/query/json.response.map_failure', () => {
     expect(scope.getState(query.$error)).toEqual(originalError);
   });
 });
-
