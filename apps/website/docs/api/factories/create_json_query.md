@@ -43,7 +43,7 @@ Config fields:
   - `mapFailure?`: <Badge type="tip" text="since v0.14" /> optional mapper for the error data, available overloads:
 
     - `(err) => mapped`
-    - `{ source: Store, fn: (data, err) => mapped }`
+    - `{ source: Store, fn: (err, data) => mapped }`
 
     `err` object contains:
 
