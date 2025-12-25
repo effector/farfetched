@@ -40,6 +40,17 @@ Config fields:
     - `params`: params which were passed to the [_Query_](/api/primitives/query)
     - `headers`: <Badge type="tip" text="since v0.13" /> raw response headers
 
+  - `mapFailure?`: <Badge type="tip" text="since v0.14" /> optional mapper for the error data, available overloads:
+
+    - `(err) => mapped`
+    - `{ source: Store, fn: (data, err) => mapped }`
+
+    `err` object contains:
+
+    - `error`: the error that occurred (can be `HttpError`, `NetworkError`, `InvalidDataError`, or `PreparationError`)
+    - `params`: params which were passed to the [_Query_](/api/primitives/query)
+    - `headers`: raw response headers (available for HTTP errors and contract/validation errors, not available for network errors)
+
 ## Showcases
 
 - [Real-world showcase with SolidJS around JSON API](https://github.com/igorkamyshev/farfetched/tree/master/apps/showcase-solid-real-world-rick-morty/)

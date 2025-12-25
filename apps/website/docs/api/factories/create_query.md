@@ -126,3 +126,55 @@ const languagesQuery = createQuery({
  * }>
  */
 ```
+
+### `createQuery({ effect, contract?, validate?, mapData?, mapFailure: Function, initialData? })` <Badge type="tip" text="since v0.14" />
+
+Creates [_Query_](/api/primitives/query) based on given [_Effect_](https://effector.dev/en/api/effector/effect/). When the [_Query_](/api/primitives/query) fails, the error is passed to `mapFailure` callback, and the result of the callback will be treated as the error of the [_Query_](/api/primitives/query).
+
+```ts
+const languagesQuery = createQuery({
+  effect: fetchLanguagesFx,
+  contract: languagesContract,
+  mapFailure({ error, params }) {
+    // Transform any error into a user-friendly message
+    if (isHttpError({ status: 404, error })) {
+      return { code: 'NOT_FOUND', message: 'Languages not found' };
+    }
+    return { code: 'UNKNOWN', message: 'Failed to fetch languages' };
+  },
+});
+
+/* typeof languagesQuery.$error === Store<{
+ *   code: string,
+ *   message: string,
+ * } | null>
+ */
+```
+
+### `createQuery({ effect, contract?, validate?, mapData?, mapFailure: { source, fn }, initialData? })` <Badge type="tip" text="since v0.14" />
+
+Creates [_Query_](/api/primitives/query) based on given [_Effect_](https://effector.dev/en/api/effector/effect/). When the [_Query_](/api/primitives/query) fails, the error is passed to `mapFailure.fn` callback as well as original parameters of the [_Query_](/api/primitives/query) and current value of `mapFailure.source` [_Store_](https://effector.dev/en/api/effector/store/), result of the callback will be treated as the error of the [_Query_](/api/primitives/query).
+
+```ts
+const $errorMessages = createStore({
+  404: 'Resource not found',
+  500: 'Server error',
+});
+
+const languagesQuery = createQuery({
+  effect: fetchLanguagesFx,
+  contract: languagesContract,
+  mapFailure: {
+    source: $errorMessages,
+    fn({ error, params }, errorMessages) {
+      if (isHttpError({ error })) {
+        return {
+          message: errorMessages[error.status] ?? 'Unknown error',
+          status: error.status,
+        };
+      }
+      return { message: 'Network error', status: null };
+    },
+  },
+});
+```
