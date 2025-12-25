@@ -29,9 +29,12 @@ describe('fetch/json.response.data', () => {
     });
 
     expect(watcher.listeners.onFailData).toBeCalledWith(
-      preparationError({
-        response: 'It is not JSON',
-        reason: 'Unexpected token I in JSON at position 0',
+      expect.objectContaining({
+        error: preparationError({
+          response: 'It is not JSON',
+          reason: 'Unexpected token I in JSON at position 0',
+        }),
+        responseMeta: expect.objectContaining({ headers: expect.anything() }),
       })
     );
   });

@@ -18,7 +18,7 @@ import {
   type FetchApiRecord,
   mergeQueryStrings,
 } from './lib';
-import { requestFx } from './request';
+import { requestFx, type RequestError } from './request';
 
 export type HttpMethod =
   | 'HEAD'
@@ -108,6 +108,11 @@ export type ApiRequestError =
 
 export type JsonApiRequestError = ApiRequestError | InvalidDataError;
 
+export type ApiRequestErrorWithMeta = {
+  error: ApiRequestError;
+  responseMeta?: { headers: Headers };
+};
+
 export function createApiRequest<
   R extends CreationRequestConfig<B>,
   P,
@@ -124,7 +129,7 @@ export function createApiRequest<
       method: HttpMethod;
     },
     { result: ApiRequestResult; meta: { headers: Headers } },
-    ApiRequestError
+    ApiRequestErrorWithMeta
   >(
     async ({
       url,
@@ -145,15 +150,17 @@ export function createApiRequest<
         signal: abortController?.signal,
       });
 
-      const response = await requestFx(request).catch((cause) => {
-        if (config.response.transformError) {
-          throw config.response.transformError(cause);
-        }
+      const response = await requestFx(request).catch((cause: RequestError) => {
+        // cause is { error, responseMeta? }
+        const transformedError =
+          config.response.transformError?.(cause.error) ?? cause.error;
 
-        throw cause;
+        // Re-throw with responseMeta preserved
+        throw { error: transformedError, responseMeta: cause.responseMeta };
       });
 
       const [forPrepare, forError] = response.body?.tee() ?? [null, null];
+      const responseHeaders = response.headers;
 
       const prepared = await prepareFx(new Response(forPrepare, response)).then(
         async (result) => {
@@ -162,10 +169,13 @@ export function createApiRequest<
           return result;
         },
         async (cause) => {
-          throw preparationError({
-            response: await new Response(forError).text(),
-            reason: cause?.message ?? null,
-          });
+          throw {
+            error: preparationError({
+              response: await new Response(forError).text(),
+              reason: cause?.message ?? null,
+            }),
+            responseMeta: { headers: responseHeaders },
+          };
         }
       );
 
@@ -175,14 +185,17 @@ export function createApiRequest<
           : [config.response.status.expected];
 
         if (!expected.includes(response.status)) {
-          throw invalidDataError({
-            validationErrors: [
-              `Expected response status has to be one of [${expected.join(
-                ', '
-              )}], got ${response.status}`,
-            ],
-            response: prepared,
-          });
+          throw {
+            error: invalidDataError({
+              validationErrors: [
+                `Expected response status has to be one of [${expected.join(
+                  ', '
+                )}], got ${response.status}`,
+              ],
+              response: prepared,
+            }),
+            responseMeta: { headers: responseHeaders },
+          };
         }
       }
 
