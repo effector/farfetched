@@ -1,4 +1,4 @@
-import { allSettled, createStore, fork } from 'effector';
+import { allSettled, createStore, createWatch, fork } from 'effector';
 import { describe, test, expect, vi } from 'vitest';
 
 import { unknownContract } from '../../contract/unknown_contract';
@@ -34,7 +34,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[mutation.__.executeFx, fetchMock]] });
 
-    mutation.finished.failure.watch(failureHandler);
+    createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
     await allSettled(mutation.start, { scope });
 
@@ -68,7 +68,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[mutation.__.executeFx, fetchMock]] });
 
-    mutation.finished.failure.watch(failureHandler);
+    createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
     await allSettled(mutation.start, { scope });
 
@@ -101,7 +101,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[mutation.__.executeFx, fetchMock]] });
 
-    mutation.finished.failure.watch(failureHandler);
+    createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
     await allSettled(mutation.start, { scope, params: 'test_params' });
 
@@ -145,7 +145,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
         ],
       });
 
-      mutation.finished.failure.watch(failureHandler);
+      createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
       await allSettled(mutation.start, { scope });
 
@@ -186,7 +186,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
         ],
       });
 
-      mutation.finished.failure.watch(failureHandler);
+      createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
       await allSettled(mutation.start, { scope });
 
@@ -219,7 +219,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
         ],
       });
 
-      mutation.finished.failure.watch(failureHandler);
+      createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
       await allSettled(mutation.start, { scope });
 
@@ -264,7 +264,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
         ],
       });
 
-      mutation.finished.failure.watch(failureHandler);
+      createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
       await allSettled(mutation.start, { scope });
 
@@ -293,7 +293,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[mutation.__.executeFx, fetchMock]] });
 
-    mutation.finished.failure.watch(failureHandler);
+    createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
     await allSettled(mutation.start, { scope });
 
@@ -323,7 +323,7 @@ describe('remote_data/mutation/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[mutation.__.executeFx, fetchMock]] });
 
-    mutation.finished.failure.watch(failureHandler);
+    createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
 
     await allSettled(mutation.start, { scope, params: { id: 1 } });
 

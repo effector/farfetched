@@ -1,4 +1,4 @@
-import { allSettled, createStore, fork } from 'effector';
+import { allSettled, createStore, createWatch, fork } from 'effector';
 import { describe, test, expect, vi } from 'vitest';
 
 import { unknownContract } from '../../contract/unknown_contract';
@@ -34,7 +34,7 @@ describe('remote_data/query/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[query.__.executeFx, fetchMock]] });
 
-    query.finished.failure.watch(failureHandler);
+    createWatch({ unit: query.finished.failure, fn: failureHandler, scope });
 
     await allSettled(query.start, { scope });
 
@@ -68,7 +68,7 @@ describe('remote_data/query/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[query.__.executeFx, fetchMock]] });
 
-    query.finished.failure.watch(failureHandler);
+    createWatch({ unit: query.finished.failure, fn: failureHandler, scope });
 
     await allSettled(query.start, { scope });
 
@@ -103,7 +103,7 @@ describe('remote_data/query/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[query.__.executeFx, fetchMock]] });
 
-    query.finished.failure.watch(failureHandler);
+    createWatch({ unit: query.finished.failure, fn: failureHandler, scope });
 
     await allSettled(query.start, { scope, params: 'test_params' });
 
@@ -149,7 +149,7 @@ describe('remote_data/query/json.response.map_failure', () => {
         ],
       });
 
-      query.finished.failure.watch(failureHandler);
+      createWatch({ unit: query.finished.failure, fn: failureHandler, scope });
 
       await allSettled(query.start, { scope });
 
@@ -190,7 +190,7 @@ describe('remote_data/query/json.response.map_failure', () => {
         ],
       });
 
-      query.finished.failure.watch(failureHandler);
+      createWatch({ unit: query.finished.failure, fn: failureHandler, scope });
 
       await allSettled(query.start, { scope });
 
@@ -225,7 +225,7 @@ describe('remote_data/query/json.response.map_failure', () => {
         ],
       });
 
-      query.finished.failure.watch(failureHandler);
+      createWatch({ unit: query.finished.failure, fn: failureHandler, scope });
 
       await allSettled(query.start, { scope });
 
@@ -270,7 +270,7 @@ describe('remote_data/query/json.response.map_failure', () => {
         ],
       });
 
-      query.finished.failure.watch(failureHandler);
+      createWatch({ unit: query.finished.failure, fn: failureHandler, scope });
 
       await allSettled(query.start, { scope });
 
@@ -301,7 +301,7 @@ describe('remote_data/query/json.response.map_failure', () => {
 
     const scope = fork({ handlers: [[query.__.executeFx, fetchMock]] });
 
-    query.finished.failure.watch(failureHandler);
+    createWatch({ unit: query.finished.failure, fn: failureHandler, scope });
 
     await allSettled(query.start, { scope });
 
