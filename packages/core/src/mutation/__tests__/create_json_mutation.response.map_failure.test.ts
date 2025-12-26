@@ -335,4 +335,3 @@ describe('remote_data/mutation/json.response.map_failure', () => {
     );
   });
 });
-
