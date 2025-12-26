@@ -41,7 +41,7 @@ export function createRemoteOperation<
   MappedError = Error | InvalidDataError,
   Meta = unknown,
   MapDataSource = void,
-  MapFailureSource = void,
+  mapErrorSource = void,
   ValidationSource = void,
 >({
   name: ownName,
@@ -52,7 +52,7 @@ export function createRemoteOperation<
   contract,
   validate,
   mapData,
-  mapFailure,
+  mapError,
   sourced,
   paramsAreMeaningless,
 }: {
@@ -68,10 +68,10 @@ export function createRemoteOperation<
     MappedData,
     MapDataSource
   >;
-  mapFailure?: DynamicallySourcedField<
+  mapError?: DynamicallySourcedField<
     { error: Error | InvalidDataError; params: Params; headers?: Headers },
     MappedError,
-    MapFailureSource
+    mapErrorSource
   >;
   sourced?: SourcedField<Params, unknown, unknown>[];
   paramsAreMeaningless?: boolean;
@@ -81,9 +81,9 @@ export function createRemoteOperation<
   const pushError = createEvent<MappedError>();
   const startWithMeta = createEvent<{ params: Params; meta: ExecutionMeta }>();
 
-  // Default mapFailure to identity function
-  const effectiveMapFailure =
-    mapFailure ?? (({ error }) => error as MappedError);
+  // Default mapError to identity function
+  const effectivemapError =
+    mapError ?? (({ error }) => error as MappedError);
 
   const applyContractFx = createContractApplier<Params, Data, ContractData>(
     contract
@@ -169,7 +169,7 @@ export function createRemoteOperation<
       )
     >(),
   };
-  // Intermediate event before mapFailure is applied
+  // Intermediate event before mapError is applied
   const failedBeforeMap = createEvent<{
     params: Params;
     error: Error | InvalidDataError;
@@ -190,12 +190,12 @@ export function createRemoteOperation<
     meta: ExecutionMeta;
   }>();
 
-  // Apply mapFailure transformation
+  // Apply mapError transformation
   sample({
     clock: failedBeforeMap,
     source: {
       partialMapper: normalizeSourced({
-        field: effectiveMapFailure,
+        field: effectivemapError,
       }),
     },
     fn: ({ partialMapper }, { error, params, meta }) => ({
@@ -552,7 +552,7 @@ export function createRemoteOperation<
         pushData,
         startWithMeta,
         callObjectCreated,
-        // Cast to any because failedIgnoreSuppression fires before mapFailure is applied,
+        // Cast to any because failedIgnoreSuppression fires before mapError is applied,
         // so it has the original error type, not MappedError
         failedIgnoreSuppression: failedIgnoreSuppression as any,
       },

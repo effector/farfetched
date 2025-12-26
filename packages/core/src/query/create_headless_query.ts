@@ -47,7 +47,7 @@ export function createHeadlessQuery<
   MappedData,
   MappedError = Error | InvalidDataError,
   MapDataSource = void,
-  MapFailureSource = void,
+  mapErrorSource = void,
   ValidationSource = void,
   Initial = null,
 >(
@@ -59,10 +59,10 @@ export function createHeadlessQuery<
       MappedData,
       MapDataSource
     >;
-    mapFailure?: DynamicallySourcedField<
+    mapError?: DynamicallySourcedField<
       { error: Error | InvalidDataError; params: Params; headers?: Headers },
       MappedError,
-      MapFailureSource
+      mapErrorSource
     >;
     validate?: Validator<ContractData, Params, ValidationSource>;
     sourced?: SourcedField<Params, unknown, unknown>[];
@@ -73,7 +73,7 @@ export function createHeadlessQuery<
     initialData: initialDataRaw,
     contract,
     mapData,
-    mapFailure,
+    mapError,
     enabled,
     validate,
     name,
@@ -92,7 +92,7 @@ export function createHeadlessQuery<
     MappedError,
     QueryMeta<MappedData, Initial>,
     MapDataSource,
-    MapFailureSource,
+    mapErrorSource,
     ValidationSource
   >({
     name: name ?? getFactoryName(),
@@ -107,7 +107,7 @@ export function createHeadlessQuery<
     contract,
     validate,
     mapData,
-    mapFailure,
+    mapError,
     sourced,
     paramsAreMeaningless,
   });

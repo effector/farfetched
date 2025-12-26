@@ -205,7 +205,7 @@ export function createQuery<
     initialData: config.initialData ?? null,
     contract: config.contract ?? unknownContract,
     mapData: config.mapData ?? (({ result }) => result),
-    mapFailure: config.mapFailure,
+    mapError: config.mapError,
     enabled: config.enabled,
     validate: config.validate,
     name: config.name,

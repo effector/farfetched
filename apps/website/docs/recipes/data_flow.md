@@ -156,7 +156,7 @@ const $errorMessages = createStore({
 const userQuery = createJsonQuery({
   //...
   response: {
-    mapFailure: {
+    mapError: {
       source: $errorMessages,
       fn: ({ error, headers }, messages) => {
         if (isHttpError({ error })) {

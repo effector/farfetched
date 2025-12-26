@@ -22,7 +22,7 @@ describe('remote_data/query/json.response.map_failure', () => {
       request,
       response: {
         contract: unknownContract,
-        mapFailure: ({ error }) => {
+        mapError: ({ error }) => {
           expect(error).toEqual(originalError);
           return transformedError;
         },
@@ -46,7 +46,7 @@ describe('remote_data/query/json.response.map_failure', () => {
       request,
       response: {
         contract: unknownContract,
-        mapFailure: {
+        mapError: {
           source: $suffix,
           fn: ({ error }, suffix) => {
             return { message: (error as any).message + suffix };
@@ -66,7 +66,7 @@ describe('remote_data/query/json.response.map_failure', () => {
     });
   });
 
-  test('receives params in mapFailure', async () => {
+  test('receives params in mapError', async () => {
     const query = createJsonQuery({
       params: declareParams<string>(),
       request: {
@@ -75,7 +75,7 @@ describe('remote_data/query/json.response.map_failure', () => {
       },
       response: {
         contract: unknownContract,
-        mapFailure: ({ error, params }) => {
+        mapError: ({ error, params }) => {
           expect(params).toBe('test_params');
           return { ...error, params };
         },
@@ -93,13 +93,13 @@ describe('remote_data/query/json.response.map_failure', () => {
     });
   });
 
-  describe('headers in mapFailure', () => {
+  describe('headers in mapError', () => {
     test('HTTP 4xx error has headers', async () => {
       const query = createJsonQuery({
         request,
         response: {
           contract: unknownContract,
-          mapFailure: ({ error, headers }) => {
+          mapError: ({ error, headers }) => {
             expect(isHttpError({ error })).toBe(true);
             expect(headers?.get('X-Error-Code')).toBe('CUSTOM_ERROR');
             return { error, hasHeaders: !!headers };
@@ -132,7 +132,7 @@ describe('remote_data/query/json.response.map_failure', () => {
         request,
         response: {
           contract: unknownContract,
-          mapFailure: ({ error, headers }) => {
+          mapError: ({ error, headers }) => {
             expect(isHttpError({ error })).toBe(true);
             expect(headers?.get('X-Server-Error')).toBe('DB_DOWN');
             return { error, serverHeader: headers?.get('X-Server-Error') };
@@ -166,7 +166,7 @@ describe('remote_data/query/json.response.map_failure', () => {
         request,
         response: {
           contract: unknownContract,
-          mapFailure: ({ error, headers }) => {
+          mapError: ({ error, headers }) => {
             expect(isNetworkError({ error })).toBe(true);
             expect(headers).toBeUndefined();
             return { error, hasHeaders: !!headers };
@@ -195,7 +195,7 @@ describe('remote_data/query/json.response.map_failure', () => {
         request,
         response: {
           contract: failingContract,
-          mapFailure: ({ error, headers }) => {
+          mapError: ({ error, headers }) => {
             // Contract errors occur after successful HTTP response
             expect(headers?.get('X-Request-Id')).toBe('req-123');
             return { error, requestId: headers?.get('X-Request-Id') };
@@ -224,14 +224,14 @@ describe('remote_data/query/json.response.map_failure', () => {
     });
   });
 
-  test('without mapFailure, error passes through unchanged', async () => {
+  test('without mapError, error passes through unchanged', async () => {
     const originalError = { message: 'Original error' };
 
     const query = createJsonQuery({
       request,
       response: {
         contract: unknownContract,
-        // No mapFailure provided
+        // No mapError provided
       },
     });
 

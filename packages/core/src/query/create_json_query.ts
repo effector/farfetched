@@ -104,7 +104,7 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
-      mapFailure?: DynamicallySourcedField<
+      mapError?: DynamicallySourcedField<
         { error: JsonApiRequestError; params: Params; headers?: Headers },
         unknown,
         FailureSource
@@ -142,7 +142,7 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
-      mapFailure?: DynamicallySourcedField<
+      mapError?: DynamicallySourcedField<
         { error: JsonApiRequestError; params: Params; headers?: Headers },
         unknown,
         FailureSource
@@ -173,7 +173,7 @@ export function createJsonQuery<
   > & {
     response: {
       contract: Contract<unknown, Data>;
-      mapFailure?: DynamicallySourcedField<
+      mapError?: DynamicallySourcedField<
         { error: JsonApiRequestError; params: Params; headers?: Headers },
         unknown,
         FailureSource
@@ -204,7 +204,7 @@ export function createJsonQuery<
     initialData?: Data;
     response: {
       contract: Contract<unknown, Data>;
-      mapFailure?: DynamicallySourcedField<
+      mapError?: DynamicallySourcedField<
         { error: JsonApiRequestError; params: Params; headers?: Headers },
         unknown,
         FailureSource
@@ -240,7 +240,7 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
-      mapFailure?: DynamicallySourcedField<
+      mapError?: DynamicallySourcedField<
         { error: JsonApiRequestError; params: void; headers?: Headers },
         unknown,
         FailureSource
@@ -276,7 +276,7 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
-      mapFailure?: DynamicallySourcedField<
+      mapError?: DynamicallySourcedField<
         { error: JsonApiRequestError; params: void; headers?: Headers },
         unknown,
         FailureSource
@@ -305,7 +305,7 @@ export function createJsonQuery<
   > & {
     response: {
       contract: Contract<unknown, Data>;
-      mapFailure?: DynamicallySourcedField<
+      mapError?: DynamicallySourcedField<
         { error: JsonApiRequestError; params: void; headers?: Headers },
         unknown,
         FailureSource
@@ -334,7 +334,7 @@ export function createJsonQuery<
     initialData?: Data;
     response: {
       contract: Contract<unknown, Data>;
-      mapFailure?: DynamicallySourcedField<
+      mapError?: DynamicallySourcedField<
         { error: JsonApiRequestError; params: void; headers?: Headers },
         unknown,
         FailureSource
@@ -372,7 +372,7 @@ export function createJsonQuery(config: any) {
     initialData: config.initialData,
     contract: config.response.contract ?? unknownContract,
     mapData: config.response.mapData ?? (({ result }) => result),
-    mapFailure: config.response.mapFailure,
+    mapError: config.response.mapError,
     validate: config.response.validate,
     enabled: config.enabled,
     name: config.name,

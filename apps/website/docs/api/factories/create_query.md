@@ -127,15 +127,15 @@ const languagesQuery = createQuery({
  */
 ```
 
-### `createQuery({ effect, contract?, validate?, mapData?, mapFailure: Function, initialData? })` <Badge type="tip" text="since v0.14" />
+### `createQuery({ effect, contract?, validate?, mapData?, mapError: Function, initialData? })` <Badge type="tip" text="since v0.14" />
 
-Creates [_Query_](/api/primitives/query) based on given [_Effect_](https://effector.dev/en/api/effector/effect/). When the [_Query_](/api/primitives/query) fails, the error is passed to `mapFailure` callback, and the result of the callback will be treated as the error of the [_Query_](/api/primitives/query).
+Creates [_Query_](/api/primitives/query) based on given [_Effect_](https://effector.dev/en/api/effector/effect/). When the [_Query_](/api/primitives/query) fails, the error is passed to `mapError` callback, and the result of the callback will be treated as the error of the [_Query_](/api/primitives/query).
 
 ```ts
 const languagesQuery = createQuery({
   effect: fetchLanguagesFx,
   contract: languagesContract,
-  mapFailure({ error, params }) {
+  mapError({ error, params }) {
     // Transform any error into a user-friendly message
     if (isHttpError({ status: 404, error })) {
       return { code: 'NOT_FOUND', message: 'Languages not found' };
@@ -151,9 +151,9 @@ const languagesQuery = createQuery({
  */
 ```
 
-### `createQuery({ effect, contract?, validate?, mapData?, mapFailure: { source, fn }, initialData? })` <Badge type="tip" text="since v0.14" />
+### `createQuery({ effect, contract?, validate?, mapData?, mapError: { source, fn }, initialData? })` <Badge type="tip" text="since v0.14" />
 
-Creates [_Query_](/api/primitives/query) based on given [_Effect_](https://effector.dev/en/api/effector/effect/). When the [_Query_](/api/primitives/query) fails, the error is passed to `mapFailure.fn` callback as well as original parameters of the [_Query_](/api/primitives/query) and current value of `mapFailure.source` [_Store_](https://effector.dev/en/api/effector/store/), result of the callback will be treated as the error of the [_Query_](/api/primitives/query).
+Creates [_Query_](/api/primitives/query) based on given [_Effect_](https://effector.dev/en/api/effector/effect/). When the [_Query_](/api/primitives/query) fails, the error is passed to `mapError.fn` callback as well as original parameters of the [_Query_](/api/primitives/query) and current value of `mapError.source` [_Store_](https://effector.dev/en/api/effector/store/), result of the callback will be treated as the error of the [_Query_](/api/primitives/query).
 
 ```ts
 const $errorMessages = createStore({
@@ -164,7 +164,7 @@ const $errorMessages = createStore({
 const languagesQuery = createQuery({
   effect: fetchLanguagesFx,
   contract: languagesContract,
-  mapFailure: {
+  mapError: {
     source: $errorMessages,
     fn({ error, params }, errorMessages) {
       if (isHttpError({ error })) {

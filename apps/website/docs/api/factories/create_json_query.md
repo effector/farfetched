@@ -40,7 +40,7 @@ Config fields:
     - `params`: params which were passed to the [_Query_](/api/primitives/query)
     - `headers`: <Badge type="tip" text="since v0.13" /> raw response headers
 
-  - `mapFailure?`: <Badge type="tip" text="since v0.14" /> optional mapper for the error data, available overloads:
+  - `mapError?`: <Badge type="tip" text="since v0.14" /> optional mapper for the error data, available overloads:
 
     - `(err) => mapped`
     - `{ source: Store, fn: (err, data) => mapped }`
