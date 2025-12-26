@@ -48,7 +48,7 @@ describe('createJsonQuery', () => {
         request: { url: 'http://api.salo.com', method: 'GET' as const },
         response: {
           contract: unknownContract,
-          mapError: () => ({ code: 'ERROR', message: 'test' } as const),
+          mapError: () => ({ code: 'ERROR', message: 'test' }) as const,
         },
       });
 
@@ -63,7 +63,7 @@ describe('createJsonQuery', () => {
         request: { url: 'http://api.salo.com', method: 'GET' as const },
         response: {
           contract: unknownContract,
-          mapError: () => ({ code: 'ERROR', message: 'test' } as const),
+          mapError: () => ({ code: 'ERROR', message: 'test' }) as const,
         },
       });
 
@@ -105,7 +105,7 @@ describe('createJsonQuery', () => {
           contract: unknownContract,
           mapError: {
             source: createStore(42),
-            fn: () => ({ errorCode: 123 } as const),
+            fn: () => ({ errorCode: 123 }) as const,
           },
         },
       });
@@ -123,7 +123,7 @@ describe('createJsonQuery', () => {
           contract: unknownContract,
           mapError: {
             source: createStore(42),
-            fn: () => ({ errorCode: 123 } as const),
+            fn: () => ({ errorCode: 123 }) as const,
           },
         },
       });
@@ -160,4 +160,3 @@ describe('createJsonQuery', () => {
     });
   });
 });
-

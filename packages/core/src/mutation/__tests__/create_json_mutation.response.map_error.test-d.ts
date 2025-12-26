@@ -48,7 +48,7 @@ describe('createJsonMutation', () => {
         request: { url: 'http://api.salo.com', method: 'POST' as const },
         response: {
           contract: unknownContract,
-          mapError: () => ({ code: 'ERROR', message: 'test' } as const),
+          mapError: () => ({ code: 'ERROR', message: 'test' }) as const,
         },
       });
 
@@ -90,7 +90,7 @@ describe('createJsonMutation', () => {
           contract: unknownContract,
           mapError: {
             source: createStore(42),
-            fn: () => ({ errorCode: 123 } as const),
+            fn: () => ({ errorCode: 123 }) as const,
           },
         },
       });
@@ -123,4 +123,3 @@ describe('createJsonMutation', () => {
     });
   });
 });
-

@@ -145,7 +145,11 @@ describe('remote_data/mutation/json.response.map_failure', () => {
         ],
       });
 
-      createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
+      createWatch({
+        unit: mutation.finished.failure,
+        fn: failureHandler,
+        scope,
+      });
 
       await allSettled(mutation.start, { scope });
 
@@ -186,7 +190,11 @@ describe('remote_data/mutation/json.response.map_failure', () => {
         ],
       });
 
-      createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
+      createWatch({
+        unit: mutation.finished.failure,
+        fn: failureHandler,
+        scope,
+      });
 
       await allSettled(mutation.start, { scope });
 
@@ -219,7 +227,11 @@ describe('remote_data/mutation/json.response.map_failure', () => {
         ],
       });
 
-      createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
+      createWatch({
+        unit: mutation.finished.failure,
+        fn: failureHandler,
+        scope,
+      });
 
       await allSettled(mutation.start, { scope });
 
@@ -264,7 +276,11 @@ describe('remote_data/mutation/json.response.map_failure', () => {
         ],
       });
 
-      createWatch({ unit: mutation.finished.failure, fn: failureHandler, scope });
+      createWatch({
+        unit: mutation.finished.failure,
+        fn: failureHandler,
+        scope,
+      });
 
       await allSettled(mutation.start, { scope });
 
