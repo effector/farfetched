@@ -30,12 +30,20 @@ describe('remote_data/query/json.response.map_failure', () => {
     });
 
     const fetchMock = vi.fn(() => Promise.reject(originalError));
+    const failureHandler = vi.fn();
 
     const scope = fork({ handlers: [[query.__.executeFx, fetchMock]] });
+
+    query.finished.failure.watch(failureHandler);
 
     await allSettled(query.start, { scope });
 
     expect(scope.getState(query.$error)).toEqual(transformedError);
+    expect(failureHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: transformedError,
+      })
+    );
   });
 
   test('transform error with sourced callback', async () => {
@@ -56,14 +64,22 @@ describe('remote_data/query/json.response.map_failure', () => {
     });
 
     const fetchMock = vi.fn(() => Promise.reject(originalError));
+    const failureHandler = vi.fn();
 
     const scope = fork({ handlers: [[query.__.executeFx, fetchMock]] });
+
+    query.finished.failure.watch(failureHandler);
 
     await allSettled(query.start, { scope });
 
     expect(scope.getState(query.$error)).toEqual({
       message: 'Original error_suffix',
     });
+    expect(failureHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: { message: 'Original error_suffix' },
+      })
+    );
   });
 
   test('receives params in mapError', async () => {
@@ -77,20 +93,29 @@ describe('remote_data/query/json.response.map_failure', () => {
         contract: unknownContract,
         mapError: ({ error, params }) => {
           expect(params).toBe('test_params');
-          return { ...error, params };
+          return { ...(error as object), params };
         },
       },
     });
 
     const fetchMock = vi.fn(() => Promise.reject({ message: 'error' }));
+    const failureHandler = vi.fn();
 
     const scope = fork({ handlers: [[query.__.executeFx, fetchMock]] });
+
+    query.finished.failure.watch(failureHandler);
 
     await allSettled(query.start, { scope, params: 'test_params' });
 
     expect(scope.getState(query.$error)).toMatchObject({
       params: 'test_params',
     });
+    expect(failureHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        params: 'test_params',
+        error: { message: 'error', params: 'test_params' },
+      })
+    );
   });
 
   describe('headers in mapError', () => {
@@ -107,6 +132,8 @@ describe('remote_data/query/json.response.map_failure', () => {
         },
       });
 
+      const failureHandler = vi.fn();
+
       // Mock at transport level to get proper headers flow
       const scope = fork({
         handlers: [
@@ -122,9 +149,16 @@ describe('remote_data/query/json.response.map_failure', () => {
         ],
       });
 
+      query.finished.failure.watch(failureHandler);
+
       await allSettled(query.start, { scope });
 
       expect(scope.getState(query.$error)).toMatchObject({ hasHeaders: true });
+      expect(failureHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.objectContaining({ hasHeaders: true }),
+        })
+      );
     });
 
     test('HTTP 5xx error has headers', async () => {
@@ -140,6 +174,8 @@ describe('remote_data/query/json.response.map_failure', () => {
         },
       });
 
+      const failureHandler = vi.fn();
+
       const scope = fork({
         handlers: [
           [
@@ -154,11 +190,18 @@ describe('remote_data/query/json.response.map_failure', () => {
         ],
       });
 
+      query.finished.failure.watch(failureHandler);
+
       await allSettled(query.start, { scope });
 
       expect(scope.getState(query.$error)).toMatchObject({
         serverHeader: 'DB_DOWN',
       });
+      expect(failureHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.objectContaining({ serverHeader: 'DB_DOWN' }),
+        })
+      );
     });
 
     test('network error has no headers', async () => {
@@ -174,15 +217,24 @@ describe('remote_data/query/json.response.map_failure', () => {
         },
       });
 
+      const failureHandler = vi.fn();
+
       const scope = fork({
         handlers: [
           [fetchFx, () => Promise.reject(new TypeError('Network error'))],
         ],
       });
 
+      query.finished.failure.watch(failureHandler);
+
       await allSettled(query.start, { scope });
 
       expect(scope.getState(query.$error)).toMatchObject({ hasHeaders: false });
+      expect(failureHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.objectContaining({ hasHeaders: false }),
+        })
+      );
     });
 
     test('contract error has headers from successful response', async () => {
@@ -203,6 +255,8 @@ describe('remote_data/query/json.response.map_failure', () => {
         },
       });
 
+      const failureHandler = vi.fn();
+
       const scope = fork({
         handlers: [
           [
@@ -216,11 +270,18 @@ describe('remote_data/query/json.response.map_failure', () => {
         ],
       });
 
+      query.finished.failure.watch(failureHandler);
+
       await allSettled(query.start, { scope });
 
       expect(scope.getState(query.$error)).toMatchObject({
         requestId: 'req-123',
       });
+      expect(failureHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          error: expect.objectContaining({ requestId: 'req-123' }),
+        })
+      );
     });
   });
 
@@ -236,11 +297,19 @@ describe('remote_data/query/json.response.map_failure', () => {
     });
 
     const fetchMock = vi.fn(() => Promise.reject(originalError));
+    const failureHandler = vi.fn();
 
     const scope = fork({ handlers: [[query.__.executeFx, fetchMock]] });
+
+    query.finished.failure.watch(failureHandler);
 
     await allSettled(query.start, { scope });
 
     expect(scope.getState(query.$error)).toEqual(originalError);
+    expect(failureHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        error: originalError,
+      })
+    );
   });
 });
