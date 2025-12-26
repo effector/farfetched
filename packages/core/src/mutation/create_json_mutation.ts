@@ -86,6 +86,7 @@ export function createJsonMutation<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonMutationConfigWithParams<
@@ -103,6 +104,11 @@ export function createJsonMutation<
         TransformedData,
         DataSource
       >;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, Params, ValidationSource>;
       status?: { expected: number | number[] };
     };
@@ -117,6 +123,7 @@ export function createJsonMutation<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonMutationConfigWithParams<
@@ -129,6 +136,11 @@ export function createJsonMutation<
   > & {
     response: {
       contract: Contract<unknown, Data>;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<Data, Params, ValidationSource>;
       status?: { expected: number | number[] };
     };
@@ -144,6 +156,7 @@ export function createJsonMutation<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonMutationConfigNoParams<
@@ -160,6 +173,11 @@ export function createJsonMutation<
         TransformedData,
         DataSource
       >;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, void, ValidationSource>;
       status?: { expected: number | number[] };
     };
@@ -173,6 +191,7 @@ export function createJsonMutation<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonMutationConfigNoParams<
@@ -184,6 +203,11 @@ export function createJsonMutation<
   > & {
     response: {
       contract: Contract<unknown, Data>;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        unknown,
+        FailureSource
+      >;
       validate?: Validator<Data, void, ValidationSource>;
       status?: { expected: number | number[] };
     };
@@ -203,6 +227,7 @@ export function createJsonMutation(config: any): Mutation<any, any, any> {
   const headlessMutation = createHeadlessMutation({
     contract: config.response.contract ?? unknownContract,
     mapData: config.response.mapData ?? (({ result }) => result),
+    mapError: config.response.mapError,
     validate: config.response.validate,
     enabled: config.enabled,
     name: config.name,

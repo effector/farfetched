@@ -175,8 +175,35 @@ const userQuery = createJsonQuery({
 The error mapper receives the following data:
 
 - `error`: the original error that occurred
-- `params`: the parameters that were passed to the [_Query_](/api/primitives/query)
+- `params`: the parameters that were passed to the [_Query_](/api/primitives/query) or [_Mutation_](/api/primitives/mutation)
 - `headers`: raw response headers (available for HTTP errors and contract/validation errors where the response was received, not available for network errors)
+
+The same `mapError` option is available for [_Mutations_](/api/primitives/mutation):
+
+```ts
+const $errorMessages = createStore({
+  401: 'Invalid credentials',
+  429: 'Too many attempts',
+});
+
+const loginMutation = createJsonMutation({
+  //...
+  response: {
+    mapError: {
+      source: $errorMessages,
+      fn: ({ error, headers }, messages) => {
+        if (isHttpError({ error })) {
+          return {
+            message: messages[error.status] ?? 'Unknown error',
+            requestId: headers?.get('X-Request-Id'),
+          };
+        }
+        return { message: 'Network error', requestId: null };
+      },
+    },
+  },
+});
+```
 
 ## Data-flow in basic factories
 

@@ -21,7 +21,9 @@ export function createHeadlessMutation<
   ContractData extends Data,
   MappedData,
   Error,
+  MappedError = Error | InvalidDataError,
   MapDataSource = void,
+  MapErrorSource = void,
   ValidationSource = void,
 >(
   config: SharedMutationFactoryConfig & {
@@ -32,9 +34,14 @@ export function createHeadlessMutation<
       MappedData,
       MapDataSource
     >;
+    mapError?: DynamicallySourcedField<
+      { error: Error | InvalidDataError; params: Params; headers?: Headers },
+      MappedError,
+      MapErrorSource
+    >;
   }
-): Mutation<Params, MappedData, Error | InvalidDataError> {
-  const { name, enabled, contract, validate, mapData } = config;
+): Mutation<Params, MappedData, MappedError> {
+  const { name, enabled, contract, validate, mapData, mapError } = config;
 
   const operation = createRemoteOperation<
     Params,
@@ -42,10 +49,10 @@ export function createHeadlessMutation<
     ContractData,
     MappedData,
     Error,
-    Error | InvalidDataError,
+    MappedError,
     null,
     MapDataSource,
-    void,
+    MapErrorSource,
     ValidationSource
   >({
     name: name ?? getFactoryName(),
@@ -56,6 +63,7 @@ export function createHeadlessMutation<
     contract,
     validate,
     mapData,
+    mapError,
   });
 
   // -- Protocols --
