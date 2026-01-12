@@ -235,6 +235,10 @@ export function createRemoteOperation<
     sid: `ff.${name}.$statusHistory`,
   });
 
+  // Reset status history on reset to prevent abort handler from restoring old 'pending' status
+  // This fixes issue #545: reset during execution leaving operation in pending state
+  $statusHistory.reset(reset);
+
   sample({
     clock: $status.updates,
     source: $statusHistory,
