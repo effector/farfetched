@@ -554,6 +554,9 @@ export function createRemoteOperation<
         // Cast to any because failedIgnoreSuppression fires before mapError is applied,
         // so it has the original error type, not MappedError
         failedIgnoreSuppression: failedIgnoreSuppression as any,
+        // Cast to any because failedBeforeMap fires before mapError is applied,
+        // so it has the original error type, not MappedError
+        failedBeforeMap: failedBeforeMap as any,
       },
     },
   };

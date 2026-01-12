@@ -128,6 +128,11 @@ export interface RemoteOperation<
         error: Error;
         meta: ExecutionMeta;
       }>;
+      failedBeforeMap: EventCallable<{
+        params: Params;
+        error: Error;
+        meta: ExecutionMeta;
+      }>;
     } & ExtraLowLevelAPI;
   };
 }

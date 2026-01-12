@@ -165,6 +165,23 @@ export function retry<
       target: failed,
     });
 
+    // When filter rejects contract/validation errors, let them propagate normally
+    // This fixes the issue where query gets stuck in pending state when:
+    // 1. stopErrorPropagation is true (from successful fetch)
+    // 2. Contract/validation fails
+    // 3. Retry filter rejects the error (e.g., isNetworkError returns false for contract errors)
+    sample({
+      clock: operation.__.lowLevelAPI.failedIgnoreSuppression,
+      source: { partialFilter: $partialFilter },
+      filter: ({ partialFilter }, clock) => !partialFilter(clock),
+      fn: (_, { params, error, meta }) => ({
+        params,
+        error,
+        meta: { ...meta, stopErrorPropagation: false },
+      }),
+      target: operation.__.lowLevelAPI.failedBeforeMap,
+    });
+
     operation.__.lowLevelAPI.dataSourceRetrieverFx.use(
       attach({
         source: { supressError: $supressError, partialFilter: $partialFilter },
