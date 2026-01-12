@@ -566,4 +566,31 @@ describe('RemoteOperation and onAbort callback', () => {
 
     expect(handleCancel).toBeCalledTimes(1);
   });
+
+  test('reset during execution should not leave operation in pending state, issue #545', async () => {
+    const defer = createDefer();
+
+    const operation = createRemoteOperation({
+      ...defaultConfig,
+    });
+
+    operation.__.executeFx.use(() => defer.promise);
+
+    const scope = fork();
+
+    // Start the operation (don't await)
+    allSettled(operation.start, { scope, params: 42 });
+
+    // Reset while it's still executing (don't await)
+    allSettled(operation.reset, { scope });
+
+    // Resolve the deferred promise to let the effect complete
+    defer.resolve(null);
+
+    await allSettled(scope);
+
+    // After reset, status should be 'initial', not 'pending'
+    expect(scope.getState(operation.$status)).toBe('initial');
+    expect(scope.getState(operation.$pending)).toBe(false);
+  });
 });
