@@ -196,13 +196,16 @@ export function createQuery<
     Error,
     ContractData,
     MappedData,
+    any,
     MapDataSource,
+    any,
     ValidationSource,
     MappedData
   >({
     initialData: config.initialData ?? null,
     contract: config.contract ?? unknownContract,
     mapData: config.mapData ?? (({ result }) => result),
+    mapError: config.mapError,
     enabled: config.enabled,
     validate: config.validate,
     name: config.name,

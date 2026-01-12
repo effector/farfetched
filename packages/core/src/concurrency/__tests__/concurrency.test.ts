@@ -80,6 +80,7 @@ describe('concurrency', async () => {
               "explanation": "Request was cancelled due to concurrency policy",
             },
             "meta": {
+              "responseMeta": undefined,
               "stale": false,
               "stopErrorPropagation": false,
             },

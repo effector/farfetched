@@ -52,13 +52,14 @@ describe('fetch/request', () => {
         params: new Request('https://api.salo.com'),
       });
 
-      expect(effectWatcher.listeners.onFailData).toHaveBeenCalledWith(
-        httpError({
+      expect(effectWatcher.listeners.onFailData).toHaveBeenCalledWith({
+        error: httpError({
           status: code,
           statusText: 'Request cannot',
           response: '',
-        })
-      );
+        }),
+        responseMeta: { headers: FAILED_RESPONSE.headers },
+      });
     });
   });
 
@@ -74,10 +75,10 @@ describe('fetch/request', () => {
       params: new Request('https://api.salo.com'),
     });
 
-    expect(effectWatcher.listeners.onFailData).toHaveBeenCalledWith(
-      expect.objectContaining({
+    expect(effectWatcher.listeners.onFailData).toHaveBeenCalledWith({
+      error: expect.objectContaining({
         cause,
-      })
-    );
+      }),
+    });
   });
 });

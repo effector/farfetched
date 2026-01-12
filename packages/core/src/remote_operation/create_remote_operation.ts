@@ -38,8 +38,10 @@ export function createRemoteOperation<
   ContractData extends Data,
   MappedData,
   Error,
-  Meta,
+  MappedError = Error | InvalidDataError,
+  Meta = unknown,
   MapDataSource = void,
+  mapErrorSource = void,
   ValidationSource = void,
 >({
   name: ownName,
@@ -50,6 +52,7 @@ export function createRemoteOperation<
   contract,
   validate,
   mapData,
+  mapError,
   sourced,
   paramsAreMeaningless,
 }: {
@@ -65,13 +68,21 @@ export function createRemoteOperation<
     MappedData,
     MapDataSource
   >;
+  mapError?: DynamicallySourcedField<
+    { error: Error | InvalidDataError; params: Params; headers?: Headers },
+    MappedError,
+    mapErrorSource
+  >;
   sourced?: SourcedField<Params, unknown, unknown>[];
   paramsAreMeaningless?: boolean;
-}): RemoteOperation<Params, MappedData, Error | InvalidDataError, Meta> {
+}): RemoteOperation<Params, MappedData, MappedError, Meta> {
   const revalidate = createEvent<{ params: Params; refresh: boolean }>();
   const pushData = createEvent<MappedData>();
-  const pushError = createEvent<Error | InvalidDataError>();
+  const pushError = createEvent<MappedError>();
   const startWithMeta = createEvent<{ params: Params; meta: ExecutionMeta }>();
+
+  // Default mapError to identity function
+  const effectivemapError = mapError ?? (({ error }) => error as MappedError);
 
   const applyContractFx = createContractApplier<Params, Data, ContractData>(
     contract
@@ -142,7 +153,7 @@ export function createRemoteOperation<
     }>(),
     failure: createEvent<{
       params: Params;
-      error: Error | InvalidDataError;
+      error: MappedError;
       meta: ExecutionMeta;
     }>(),
     skip: createEvent<{ params: Params; meta: ExecutionMeta }>(),
@@ -152,14 +163,20 @@ export function createRemoteOperation<
             status: 'done';
             result: MappedData;
           }
-        | { status: 'fail'; error: Error | InvalidDataError }
+        | { status: 'fail'; error: MappedError }
         | { status: 'skip' }
       )
     >(),
   };
-  const failedNoFilters = createEvent<{
+  // Intermediate event before mapError is applied
+  const failedBeforeMap = createEvent<{
     params: Params;
     error: Error | InvalidDataError;
+    meta: ExecutionMeta;
+  }>();
+  const failedNoFilters = createEvent<{
+    params: Params;
+    error: MappedError;
     meta: ExecutionMeta;
   }>();
   const failedIgnoreSuppression = createEvent<{
@@ -171,6 +188,26 @@ export function createRemoteOperation<
     params: Params;
     meta: ExecutionMeta;
   }>();
+
+  // Apply mapError transformation
+  sample({
+    clock: failedBeforeMap,
+    source: {
+      partialMapper: normalizeSourced({
+        field: effectivemapError,
+      }),
+    },
+    fn: ({ partialMapper }, { error, params, meta }) => ({
+      error: partialMapper({
+        error,
+        params,
+        ...(metaHasResponseMeta(meta) ? meta.responseMeta : {}),
+      }),
+      params,
+      meta,
+    }),
+    target: failedNoFilters,
+  });
 
   split({
     source: failedNoFilters,
@@ -315,9 +352,13 @@ export function createRemoteOperation<
     fn: (_, { error, params }) => ({
       error: error.error as any,
       params: params.params,
-      meta: { stopErrorPropagation: error.stopErrorPropagation, stale: false },
+      meta: {
+        stopErrorPropagation: error.stopErrorPropagation,
+        stale: false,
+        responseMeta: error.responseMeta,
+      },
     }),
-    target: failedNoFilters,
+    target: failedBeforeMap,
   });
 
   const { validDataRecieved, __: invalidDataRecieved } = split(
@@ -393,7 +434,7 @@ export function createRemoteOperation<
       params: params.params,
       meta: params.meta,
     }),
-    target: failedNoFilters,
+    target: failedBeforeMap,
   });
 
   sample({
@@ -418,7 +459,7 @@ export function createRemoteOperation<
       }),
       meta,
     }),
-    target: failedNoFilters,
+    target: failedBeforeMap,
   });
 
   sample({
@@ -510,7 +551,9 @@ export function createRemoteOperation<
         pushData,
         startWithMeta,
         callObjectCreated,
-        failedIgnoreSuppression,
+        // Cast to any because failedIgnoreSuppression fires before mapError is applied,
+        // so it has the original error type, not MappedError
+        failedIgnoreSuppression: failedIgnoreSuppression as any,
       },
     },
   };
@@ -533,7 +576,11 @@ function createDataSourceHandlers<Params>(dataSources: DataSource<Params>[]) {
       stopErrorPropagation?: boolean;
       meta?: unknown;
     },
-    { stopErrorPropagation: boolean; error: unknown }
+    {
+      stopErrorPropagation: boolean;
+      error: unknown;
+      responseMeta?: { headers: Headers };
+    }
   >({
     handler: async ({ params, skipStale }) => {
       for (const dataSource of dataSources) {
@@ -547,10 +594,11 @@ function createDataSourceHandlers<Params>(dataSources: DataSource<Params>[]) {
           if (fromSource) {
             return fromSource;
           }
-        } catch (error) {
+        } catch (error: any) {
           throw {
             stopErrorPropagation: false,
-            error,
+            error: error.error ?? error,
+            responseMeta: error.responseMeta,
           };
         }
       }

@@ -71,3 +71,54 @@ const loginMutation = createMutation({
 //   params: { login: string, password: string }
 // }>
 ```
+
+### `createMutation({ effect, contract?, mapError: Function })` <Badge type="tip" text="since v0.14" />
+
+Creates [_Mutation_](/api/primitives/mutation) based on given [_Effect_](https://effector.dev/en/api/effector/effect/). When the [_Mutation_](/api/primitives/mutation) fails, the error is passed to `mapError` callback, and the result of the callback will be treated as the error of the [_Mutation_](/api/primitives/mutation).
+
+```ts
+const loginMutation = createMutation({
+  effect: loginFx,
+  contract: loginContract,
+  mapError({ error, params }) {
+    // Transform any error into a user-friendly message
+    if (isHttpError({ status: 401, error })) {
+      return { code: 'UNAUTHORIZED', message: 'Invalid credentials' };
+    }
+    return { code: 'UNKNOWN', message: 'Failed to login' };
+  },
+});
+
+// typeof loginMutation.finished.failure === Event<{
+//   error: { code: string, message: string },
+//   params: { login: string, password: string }
+// }>
+```
+
+### `createMutation({ effect, contract?, mapError: { source, fn } })` <Badge type="tip" text="since v0.14" />
+
+Creates [_Mutation_](/api/primitives/mutation) based on given [_Effect_](https://effector.dev/en/api/effector/effect/). When the [_Mutation_](/api/primitives/mutation) fails, the error is passed to `mapError.fn` callback as well as original parameters of the [_Mutation_](/api/primitives/mutation) and current value of `mapError.source` [_Store_](https://effector.dev/en/api/effector/store/), result of the callback will be treated as the error of the [_Mutation_](/api/primitives/mutation).
+
+```ts
+const $errorMessages = createStore({
+  401: 'Invalid credentials',
+  403: 'Access denied',
+});
+
+const loginMutation = createMutation({
+  effect: loginFx,
+  contract: loginContract,
+  mapError: {
+    source: $errorMessages,
+    fn({ error, params }, errorMessages) {
+      if (isHttpError({ error })) {
+        return {
+          message: errorMessages[error.status] ?? 'Unknown error',
+          status: error.status,
+        };
+      }
+      return { message: 'Network error', status: null };
+    },
+  },
+});
+```
