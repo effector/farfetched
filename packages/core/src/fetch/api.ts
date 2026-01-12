@@ -177,7 +177,7 @@ export function createApiRequest<
             responseMeta: { headers: responseHeaders },
           };
         }
-      )
+      );
 
       if (config.response.status) {
         const expected = Array.isArray(config.response.status.expected)
