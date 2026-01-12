@@ -30,6 +30,7 @@ import {
   type RemoteOperationParams,
 } from '../remote_operation/type';
 import { type RetryMeta } from './type';
+import { isAbortError } from '../errors/guards';
 
 type FailInfo<Q extends RemoteOperation<any, any, any, any>> = {
   params: RemoteOperationParams<Q>;
@@ -162,6 +163,8 @@ export function retry<
 
     sample({
       clock: operation.__.lowLevelAPI.failedIgnoreSuppression,
+      // Filter out abort errors - they should never trigger retries
+      filter: (clock) => !isAbortError({ error: clock.error }),
       target: failed,
     });
 
@@ -212,6 +215,15 @@ export function retry<
               meta: opts.meta,
             };
 
+            /*
+             * Abort errors should never be retried.
+             * They are intentional cancellations (e.g., from concurrency policies)
+             * and retrying them would defeat the purpose of the cancellation.
+             */
+            if (isAbortError({ error: error.error })) {
+              throw error;
+            }
+
             if (
               /*
                * If filter returns false, this fail is not supposed to be retried
@@ -235,5 +247,12 @@ export function retry<
     );
   }
 
-  sample({ clock: operation.finished.failure, target: failed });
+  sample({
+    clock: operation.finished.failure,
+    // Filter out abort errors - they should never trigger retries.
+    // Note: finished.failure should already have abort errors filtered out
+    // by the split in create_remote_operation.ts, but this is defensive.
+    filter: (clock) => !isAbortError({ error: clock.error }),
+    target: failed,
+  });
 }
