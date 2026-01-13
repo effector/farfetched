@@ -25,9 +25,6 @@ export { timeout } from './timeout/timeout';
 // Update public API
 export { update } from './update/update';
 
-// Attach public API
-export { attachOperation } from './attach/attach';
-
 // Cache public API
 export { cache } from './cache/cache';
 export {
@@ -39,6 +36,7 @@ export { localStorageCache } from './cache/adapters/local_storage';
 export { sessionStorageCache } from './cache/adapters/session_storage';
 export { voidCache } from './cache/adapters/void';
 export { createCacheAdapter } from './cache/adapters/instance';
+export { attachObservability } from './cache/adapters/observability';
 
 // Exposed libs
 export {
@@ -58,6 +56,7 @@ export {
   type RemoteOperationResult,
   type RemoteOperationError,
   type RemoteOperationParams,
+  type ExecutionMeta,
 } from './remote_operation/type';
 export { onAbort } from './remote_operation/on_abort';
 export { Meta, Result } from './remote_operation/store_meta';

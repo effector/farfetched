@@ -1,4 +1,4 @@
-import { attach, type Json, type Event, createEffect } from 'effector';
+import { attach, type Json, createEffect } from 'effector';
 
 import { type Contract } from '../contract/type';
 import { unknownContract } from '../contract/unknown_contract';
@@ -17,15 +17,10 @@ import {
   type SharedMutationFactoryConfig,
 } from './create_headless_mutation';
 import { type Mutation } from './type';
-import { concurrency } from '../concurrency/concurrency';
 import { onAbort } from '../remote_operation/on_abort';
 import { Meta, Result } from '../remote_operation/store_meta';
 
 // -- Shared --
-
-type ConcurrencyConfig = {
-  abort?: Event<void>;
-};
 
 type RequestConfig<Params, BodySource, QuerySource, HeadersSource, UrlSource> =
   {
@@ -59,11 +54,6 @@ interface BaseJsonMutationConfigNoParams<
     HeadersSource,
     UrlSource
   >;
-  /**
-   * @deprecated Deprecated since 0.12, use `concurrency` operator instead
-   * @see {@link https://ff.effector.dev/adr/concurrency}
-   */
-  concurrency?: ConcurrencyConfig;
 }
 
 interface BaseJsonMutationConfigWithParams<
@@ -82,11 +72,6 @@ interface BaseJsonMutationConfigWithParams<
     HeadersSource,
     UrlSource
   >;
-  /**
-   * @deprecated Deprecated since 0.12, use `concurrency` operator instead
-   * @see {@link https://ff.effector.dev/adr/concurrency}
-   */
-  concurrency?: ConcurrencyConfig;
 }
 
 // -- Overloads
@@ -101,6 +86,8 @@ export function createJsonMutation<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonMutationConfigWithParams<
@@ -118,11 +105,16 @@ export function createJsonMutation<
         TransformedData,
         DataSource
       >;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, Params, ValidationSource>;
       status?: { expected: number | number[] };
     };
   }
-): Mutation<Params, TransformedData, JsonApiRequestError>;
+): Mutation<Params, TransformedData, MappedError>;
 
 // params + no mapData
 export function createJsonMutation<
@@ -132,6 +124,8 @@ export function createJsonMutation<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonMutationConfigWithParams<
@@ -144,11 +138,16 @@ export function createJsonMutation<
   > & {
     response: {
       contract: Contract<unknown, Data>;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<Data, Params, ValidationSource>;
       status?: { expected: number | number[] };
     };
   }
-): Mutation<Params, Data, JsonApiRequestError>;
+): Mutation<Params, Data, MappedError>;
 
 // No params + mapData
 export function createJsonMutation<
@@ -159,6 +158,8 @@ export function createJsonMutation<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonMutationConfigNoParams<
@@ -175,11 +176,16 @@ export function createJsonMutation<
         TransformedData,
         DataSource
       >;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, void, ValidationSource>;
       status?: { expected: number | number[] };
     };
   }
-): Mutation<void, TransformedData, JsonApiRequestError>;
+): Mutation<void, TransformedData, MappedError>;
 
 // No params + no mapData
 export function createJsonMutation<
@@ -188,6 +194,8 @@ export function createJsonMutation<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonMutationConfigNoParams<
@@ -199,11 +207,16 @@ export function createJsonMutation<
   > & {
     response: {
       contract: Contract<unknown, Data>;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<Data, void, ValidationSource>;
       status?: { expected: number | number[] };
     };
   }
-): Mutation<void, Data, JsonApiRequestError>;
+): Mutation<void, Data, MappedError>;
 
 // -- Implementation --
 export function createJsonMutation(config: any): Mutation<any, any, any> {
@@ -218,6 +231,7 @@ export function createJsonMutation(config: any): Mutation<any, any, any> {
   const headlessMutation = createHeadlessMutation({
     contract: config.response.contract ?? unknownContract,
     mapData: config.response.mapData ?? (({ result }) => result),
+    mapError: config.response.mapError,
     validate: config.response.validate,
     enabled: config.enabled,
     name: config.name,
@@ -263,30 +277,8 @@ export function createJsonMutation(config: any): Mutation<any, any, any> {
     })
   );
 
-  const op = {
+  return {
     ...headlessMutation,
     __: { ...headlessMutation.__, executeFx },
   };
-
-  /* TODO: in future releases we will remove this code and make concurrency a separate function */
-  if (config.concurrency) {
-    console.error(
-      'concurrency field in createJsonMutation is deprecated, please use concurrency operator instead: https://ff.effector.dev/adr/concurrency.html'
-    );
-
-    op.__.meta.flags.concurrencyFieldUsed = true;
-  }
-
-  if (config.concurrency) {
-    setTimeout(() => {
-      if (!op.__.meta.flags.concurrencyOperatorUsed) {
-        concurrency(op, {
-          strategy: config.concurrency?.strategy ?? 'TAKE_EVERY',
-          abortAll: config.concurrency?.abort,
-        });
-      }
-    });
-  }
-
-  return op;
 }

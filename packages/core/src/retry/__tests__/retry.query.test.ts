@@ -9,7 +9,10 @@ import { describe, test, vi, expect, beforeAll, afterAll } from 'vitest';
 
 import { watchRemoteOperation } from '../../test_utils/watch_query';
 import { createQuery } from '../../query/create_query';
+import { createJsonQuery } from '../../query/create_json_query';
 import { retry } from '../retry';
+import { isNetworkError } from '../../errors/guards';
+import { fetchFx } from '../../fetch/fetch';
 
 describe('retry with query', () => {
   beforeAll(() => {
@@ -449,6 +452,7 @@ describe('retry with query', () => {
         {
           "error": [Error: Sorry, attempt 1],
           "meta": {
+            "responseMeta": undefined,
             "stale": false,
             "stopErrorPropagation": false,
           },
@@ -458,5 +462,116 @@ describe('retry with query', () => {
         },
       ]
     `);
+  });
+
+  test('does not get stuck in pending when filter rejects contract error, issue #521', async () => {
+    // Contract that always fails - expects string but receives object
+    const failingContract = {
+      isData: (raw: unknown): raw is string => typeof raw === 'string',
+      getErrorMessages: () => ['Expected string, got object'],
+    };
+
+    const query = createJsonQuery({
+      request: {
+        method: 'GET' as const,
+        url: 'https://api.example.com/data',
+      },
+      response: {
+        contract: failingContract,
+      },
+    });
+
+    retry(query, {
+      times: 1,
+      delay: 100,
+      filter: isNetworkError, // This filter will reject contract errors
+    });
+
+    // Mock fetch to return valid JSON response (but it won't pass the contract)
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ data: 'value' })));
+
+    const scope = fork({
+      handlers: [[fetchFx, fetchMock]],
+    });
+
+    const { listeners } = watchRemoteOperation(query, scope);
+
+    allSettled(query.start, { scope });
+
+    await vi.advanceTimersByTimeAsync(200);
+    await allSettled(scope);
+
+    // Query should not be stuck in pending state
+    expect(scope.getState(query.$pending)).toBe(false);
+
+    // Query should be in fail state
+    expect(scope.getState(query.$status)).toBe('fail');
+
+    // finished.failure should have been called
+    expect(listeners.onFailure).toBeCalledTimes(1);
+
+    // Error should be an InvalidDataError (contract validation failed)
+    expect(scope.getState(query.$error)).toMatchObject({
+      errorType: 'INVALID_DATA',
+      validationErrors: ['Expected string, got object'],
+    });
+  });
+
+  test('does not get stuck in pending when filter rejects contract error, issue #521 (supressIntermediateErrors: false variation)', async () => {
+    // Contract that always fails - expects string but receives object
+    const failingContract = {
+      isData: (raw: unknown): raw is string => typeof raw === 'string',
+      getErrorMessages: () => ['Expected string, got object'],
+    };
+
+    const query = createJsonQuery({
+      request: {
+        method: 'GET' as const,
+        url: 'https://api.example.com/data',
+      },
+      response: {
+        contract: failingContract,
+      },
+    });
+
+    retry(query, {
+      times: 1,
+      delay: 100,
+      filter: isNetworkError, // This filter will reject contract errors
+      supressIntermediateErrors: false, // this causes the error to be propagated on each fail
+    });
+
+    // Mock fetch to return valid JSON response (but it won't pass the contract)
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response(JSON.stringify({ data: 'value' })));
+
+    const scope = fork({
+      handlers: [[fetchFx, fetchMock]],
+    });
+
+    const { listeners } = watchRemoteOperation(query, scope);
+
+    allSettled(query.start, { scope });
+
+    await vi.advanceTimersByTimeAsync(200);
+    await allSettled(scope);
+
+    // Query should not be stuck in pending state
+    expect(scope.getState(query.$pending)).toBe(false);
+
+    // Query should be in fail state
+    expect(scope.getState(query.$status)).toBe('fail');
+
+    // finished.failure should have been called
+    expect(listeners.onFailure).toBeCalledTimes(1);
+
+    // Error should be an InvalidDataError (contract validation failed)
+    expect(scope.getState(query.$error)).toMatchObject({
+      errorType: 'INVALID_DATA',
+      validationErrors: ['Expected string, got object'],
+    });
   });
 });

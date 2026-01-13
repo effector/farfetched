@@ -38,15 +38,89 @@ Config fields:
     - `params`: params which were passed to the [_Mutation_](/api/primitives/mutation)
     - `headers`: <Badge type="tip" text="since v0.13" /> raw response headers
 
+  - `mapError?`: <Badge type="tip" text="since v0.14" /> optional mapper for the error, available overloads:
+
+    - `(err) => mapped`
+    - `{ source: Store, fn: (err, sourceValue) => mapped }`
+
+    `err` object contains:
+
+    - `error`: the original error that occurred
+    - `params`: params which were passed to the [_Mutation_](/api/primitives/mutation)
+    - `headers`: raw response headers (available for HTTP errors and contract/validation errors where the response was received, not available for network errors)
+
   - `status.expected`: `number` or `Array<number>` of expected HTTP status codes, if the response status code is not in the list, the mutation will be treated as failed
 
-- `concurrency?`: concurrency settings for the [_Mutation_](/api/primitives/mutation)
-  ::: danger Deprecation warning
+## Examples
 
-  This field is deprecated since [v0.12](/releases/0-12) and will be removed in v0.14. Use [`concurrency` operator](/api/operators/concurrency) instead.
+### Error mapping
 
-  Please read [this ADR](/adr/concurrency) for more information and migration guide.
+You can transform errors before they are passed to the [_Mutation_](/api/primitives/mutation) using `mapError`:
 
-  :::
+```ts
+const loginMutation = createJsonMutation({
+  params: declareParams<{ login: string; password: string }>(),
+  request: {
+    method: 'POST',
+    url: 'https://api.salo.com/login',
+    body: ({ login, password }) => ({ login, password }),
+  },
+  response: {
+    contract: loginContract,
+    mapError({ error, params, headers }) {
+      if (isHttpError({ status: 401, error })) {
+        return {
+          type: 'unauthorized',
+          message: 'Invalid credentials',
+          requestId: headers?.get('X-Request-Id'),
+        };
+      }
+      if (isHttpError({ status: 429, error })) {
+        return {
+          type: 'rate_limited',
+          message: 'Too many attempts, please try again later',
+          requestId: headers?.get('X-Request-Id'),
+        };
+      }
+      return {
+        type: 'unknown',
+        message: 'Something went wrong',
+        requestId: headers?.get('X-Request-Id'),
+      };
+    },
+  },
+});
+```
 
-  - `abort?`: [_Event_](https://effector.dev/en/api/effector/event/) after calling which all in-flight requests will be aborted
+With a sourced mapper:
+
+```ts
+const $errorMessages = createStore({
+  401: 'Invalid credentials',
+  429: 'Too many attempts',
+});
+
+const loginMutation = createJsonMutation({
+  params: declareParams<{ login: string; password: string }>(),
+  request: {
+    method: 'POST',
+    url: 'https://api.salo.com/login',
+    body: ({ login, password }) => ({ login, password }),
+  },
+  response: {
+    contract: loginContract,
+    mapError: {
+      source: $errorMessages,
+      fn({ error, headers }, messages) {
+        if (isHttpError({ error })) {
+          return {
+            message: messages[error.status] ?? 'Unknown error',
+            requestId: headers?.get('X-Request-Id'),
+          };
+        }
+        return { message: 'Network error', requestId: null };
+      },
+    },
+  },
+});
+```

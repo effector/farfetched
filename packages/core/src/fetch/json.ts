@@ -12,6 +12,7 @@ import {
   StaticOnlyRequestConfig,
 } from './api';
 import { mergeRecords } from './lib';
+import { drain } from 'libs/lohyphen';
 
 export type JsonObject = Record<string, Json>;
 
@@ -66,13 +67,14 @@ export function createJsonApiRequest<R extends CreationRequestConfig>(
     },
     response: {
       extract: async (response) => {
-        const emptyContent = await isEmptyResponse(response);
+        const [emptyContent, nonEmptyResponse] =
+          await checkEmptyResponse(response);
 
         if (emptyContent) {
           return null;
         }
 
-        return response.json();
+        return nonEmptyResponse.json();
       },
       transformError: (error) => {
         if (!isHttpError({ error })) {
@@ -104,23 +106,26 @@ export function createJsonApiRequest<R extends CreationRequestConfig>(
   return jsonApiCallFx;
 }
 
-async function isEmptyResponse(response: Response): Promise<boolean> {
+async function checkEmptyResponse(
+  response: Response
+): Promise<[true, null] | [false, Response]> {
   if (!response.body) {
-    return true;
+    return [true, null];
   }
 
   const headerAsEmpty = response.headers.get('Content-Length') === '0';
   if (headerAsEmpty) {
-    return true;
+    return [true, null];
   }
 
-  // Clone response to read it
-  // because response can be read only once
-  const clonnedResponse = response.clone();
-  const bodyAsText = await clonnedResponse.text();
+  const [originalBody, clonedBody] = response.body.tee();
+
+  const bodyAsText = await new Response(clonedBody).text();
   if (bodyAsText.length === 0) {
-    return true;
+    await drain(originalBody);
+
+    return [true, null];
   }
 
-  return false;
+  return [false, new Response(originalBody, response)];
 }

@@ -128,13 +128,12 @@ export interface RemoteOperation<
         error: Error;
         meta: ExecutionMeta;
       }>;
+      failedBeforeMap: EventCallable<{
+        params: Params;
+        error: Error;
+        meta: ExecutionMeta;
+      }>;
     } & ExtraLowLevelAPI;
-    experimentalAPI?: {
-      attach: <Source, NewParams>(config: {
-        source: Store<Source>;
-        mapParams: (params: NewParams, source: Source) => Params;
-      }) => any;
-    };
   };
 }
 

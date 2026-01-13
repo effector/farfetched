@@ -19,15 +19,19 @@ sequenceDiagram
     activate S
     S->>C: response
     deactivate S
+    C->>C: apply error mapper
     C-->>A: finished.failed
 
     C->>C: parse response
+    C->>C: apply error mapper
     C-->>A: finished.failed
 
     C->>C: apply contract
+    C->>C: apply error mapper
     C-->>A: finished.failed
 
     C->>C: apply validator
+    C->>C: apply error mapper
     C-->>A: finished.failed
 
     C->>C: apply data mapper
@@ -128,6 +132,74 @@ const userQuery = createJsonQuery({
         ...result,
         name: result.name.translations[language],
       }),
+    },
+  },
+});
+```
+
+### Error mapping <Badge type="tip" text="since v0.14" />
+
+This is optional stage. If any of the previous stages fail, you can define a mapper to transform the error to the desired format before it reaches `.finished.failure` [_Event_](https://effector.dev/en/api/effector/event/) and `.$error` [_Store_](https://effector.dev/en/api/effector/store/).
+
+::: warning
+Error mappers have to be pure functions, so they are not allowed to throw an error. If the mapper throws an error, the data-flow stops immediately without any error handling.
+:::
+
+Since error mapper is a [_Sourced_](/api/primitives/sourced), it's possible to add some extra data from the application to the mapping process. For example, it could be localized error messages:
+
+```ts
+const $errorMessages = createStore({
+  404: 'User not found',
+  500: 'Server error, please try again later',
+});
+
+const userQuery = createJsonQuery({
+  //...
+  response: {
+    mapError: {
+      source: $errorMessages,
+      fn: ({ error, headers }, messages) => {
+        if (isHttpError({ error })) {
+          return {
+            message: messages[error.status] ?? 'Unknown error',
+            requestId: headers?.get('X-Request-Id'),
+          };
+        }
+        return { message: 'Network error', requestId: null };
+      },
+    },
+  },
+});
+```
+
+The error mapper receives the following data:
+
+- `error`: the original error that occurred
+- `params`: the parameters that were passed to the [_Query_](/api/primitives/query) or [_Mutation_](/api/primitives/mutation)
+- `headers`: raw response headers (available for HTTP errors and contract/validation errors where the response was received, not available for network errors)
+
+The same `mapError` option is available for [_Mutations_](/api/primitives/mutation):
+
+```ts
+const $errorMessages = createStore({
+  401: 'Invalid credentials',
+  429: 'Too many attempts',
+});
+
+const loginMutation = createJsonMutation({
+  //...
+  response: {
+    mapError: {
+      source: $errorMessages,
+      fn: ({ error, headers }, messages) => {
+        if (isHttpError({ error })) {
+          return {
+            message: messages[error.status] ?? 'Unknown error',
+            requestId: headers?.get('X-Request-Id'),
+          };
+        }
+        return { message: 'Network error', requestId: null };
+      },
     },
   },
 });

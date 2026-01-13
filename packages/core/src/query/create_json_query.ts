@@ -1,4 +1,4 @@
-import { attach, createEffect, type Event, type Json } from 'effector';
+import { attach, createEffect, type Json } from 'effector';
 
 import { type Contract } from '../contract/type';
 import { createJsonApiRequest } from '../fetch/json';
@@ -17,16 +17,10 @@ import {
 } from './create_headless_query';
 import { unknownContract } from '../contract/unknown_contract';
 import { type Validator } from '../validation/type';
-import { concurrency } from '../concurrency/concurrency';
 import { onAbort } from '../remote_operation/on_abort';
 import { Result, Meta } from '../remote_operation/store_meta';
 
 // -- Shared
-
-type ConcurrencyConfig = {
-  strategy?: 'TAKE_EVERY' | 'TAKE_FIRST' | 'TAKE_LATEST';
-  abort?: Event<void>;
-};
 
 type RequestConfig<Params, BodySource, QuerySource, HeadersSource, UrlSource> =
   {
@@ -60,11 +54,6 @@ interface BaseJsonQueryConfigNoParams<
     HeadersSource,
     UrlSource
   >;
-  /**
-   * @deprecated Deprecated since 0.12, use `concurrency` operator instead
-   * @see {@link https://ff.effector.dev/adr/concurrency}
-   */
-  concurrency?: ConcurrencyConfig;
 }
 
 interface BaseJsonQueryConfigWithParams<
@@ -83,11 +72,6 @@ interface BaseJsonQueryConfigWithParams<
     HeadersSource,
     UrlSource
   >;
-  /**
-   * @deprecated Deprecated since 0.12, use `concurrency` operator instead
-   * @see {@link https://ff.effector.dev/adr/concurrency}
-   */
-  concurrency?: ConcurrencyConfig;
 }
 
 // -- Overloads
@@ -102,6 +86,8 @@ export function createJsonQuery<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigWithParams<
@@ -119,10 +105,15 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, Params, ValidationSource>;
     };
   }
-): Query<Params, TransformedData, JsonApiRequestError>;
+): Query<Params, TransformedData, MappedError>;
 
 export function createJsonQuery<
   Params,
@@ -133,6 +124,8 @@ export function createJsonQuery<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigWithParams<
@@ -151,10 +144,15 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, Params, ValidationSource>;
     };
   }
-): Query<Params, TransformedData, JsonApiRequestError, TransformedData>;
+): Query<Params, TransformedData, MappedError, TransformedData>;
 
 // params + no mapData
 export function createJsonQuery<
@@ -164,6 +162,8 @@ export function createJsonQuery<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigWithParams<
@@ -176,10 +176,15 @@ export function createJsonQuery<
   > & {
     response: {
       contract: Contract<unknown, Data>;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<Data, Params, ValidationSource>;
     };
   }
-): Query<Params, Data, JsonApiRequestError>;
+): Query<Params, Data, MappedError>;
 
 export function createJsonQuery<
   Params,
@@ -188,6 +193,8 @@ export function createJsonQuery<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigWithParams<
@@ -201,10 +208,15 @@ export function createJsonQuery<
     initialData?: Data;
     response: {
       contract: Contract<unknown, Data>;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: Params; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<Data, Params, ValidationSource>;
     };
   }
-): Query<Params, Data, JsonApiRequestError, Data>;
+): Query<Params, Data, MappedError, Data>;
 
 // No params + mapData
 export function createJsonQuery<
@@ -215,6 +227,8 @@ export function createJsonQuery<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigNoParams<
@@ -231,10 +245,15 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, void, ValidationSource>;
     };
   }
-): Query<void, TransformedData, JsonApiRequestError>;
+): Query<void, TransformedData, MappedError>;
 
 export function createJsonQuery<
   Data,
@@ -244,6 +263,8 @@ export function createJsonQuery<
   HeadersSource = void,
   UrlSource = void,
   DataSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigNoParams<
@@ -261,10 +282,15 @@ export function createJsonQuery<
         TransformedData,
         DataSource
       >;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<TransformedData, void, ValidationSource>;
     };
   }
-): Query<void, TransformedData, JsonApiRequestError, TransformedData>;
+): Query<void, TransformedData, MappedError, TransformedData>;
 
 // No params + no mapData
 export function createJsonQuery<
@@ -273,6 +299,8 @@ export function createJsonQuery<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigNoParams<
@@ -284,10 +312,15 @@ export function createJsonQuery<
   > & {
     response: {
       contract: Contract<unknown, Data>;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<Data, void, ValidationSource>;
     };
   }
-): Query<void, Data, JsonApiRequestError>;
+): Query<void, Data, MappedError>;
 
 export function createJsonQuery<
   Data,
@@ -295,6 +328,8 @@ export function createJsonQuery<
   QuerySource = void,
   HeadersSource = void,
   UrlSource = void,
+  MappedError = JsonApiRequestError,
+  FailureSource = void,
   ValidationSource = void,
 >(
   config: BaseJsonQueryConfigNoParams<
@@ -307,10 +342,15 @@ export function createJsonQuery<
     initialData?: Data;
     response: {
       contract: Contract<unknown, Data>;
+      mapError?: DynamicallySourcedField<
+        { error: JsonApiRequestError; params: void; headers?: Headers },
+        MappedError,
+        FailureSource
+      >;
       validate?: Validator<Data, void, ValidationSource>;
     };
   }
-): Query<void, Data, JsonApiRequestError, Data>;
+): Query<void, Data, MappedError, Data>;
 
 // -- Implementation --
 export function createJsonQuery(config: any) {
@@ -333,11 +373,14 @@ export function createJsonQuery(config: any) {
     any,
     any,
     any,
+    any,
+    any,
     any
   >({
     initialData: config.initialData,
     contract: config.response.contract ?? unknownContract,
     mapData: config.response.mapData ?? (({ result }) => result),
+    mapError: config.response.mapError,
     validate: config.response.validate,
     enabled: config.enabled,
     name: config.name,
@@ -391,32 +434,8 @@ export function createJsonQuery(config: any) {
     })
   );
 
-  const op = {
+  return {
     ...headlessQuery,
     __: { ...headlessQuery.__, executeFx },
   };
-
-  /* TODO: in future releases we will remove this code and make concurrency a separate function */
-  if (config.concurrency) {
-    console.error(
-      'concurrency field in createJsonQuery is deprecated, please use concurrency operator instead: https://ff.effector.dev/adr/concurrency.html'
-    );
-
-    op.__.meta.flags.concurrencyFieldUsed = true;
-  }
-
-  setTimeout(() => {
-    if (!op.__.meta.flags.concurrencyOperatorUsed) {
-      console.error(
-        'Please apply concurrency operator to the query, read more: https://ff.effector.dev/adr/concurrency.html'
-      );
-
-      concurrency(op, {
-        strategy: config.concurrency?.strategy ?? 'TAKE_LATEST',
-        abortAll: config.concurrency?.abort,
-      });
-    }
-  });
-
-  return op;
 }

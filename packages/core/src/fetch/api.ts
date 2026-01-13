@@ -1,7 +1,7 @@
 import { attach, createEffect } from 'effector';
 
 import { normalizeStaticOrReactive, StaticOrReactive } from '../libs/patronus';
-import { NonOptionalKeys } from '../libs/lohyphen';
+import { drain, NonOptionalKeys } from '../libs/lohyphen';
 import {
   ConfigurationError,
   HttpError,
@@ -18,7 +18,7 @@ import {
   type FetchApiRecord,
   mergeQueryStrings,
 } from './lib';
-import { requestFx } from './request';
+import { requestFx, type RequestError } from './request';
 
 export type HttpMethod =
   | 'HEAD'
@@ -108,6 +108,11 @@ export type ApiRequestError =
 
 export type JsonApiRequestError = ApiRequestError | InvalidDataError;
 
+export type ApiRequestErrorWithMeta = {
+  error: ApiRequestError;
+  responseMeta?: { headers: Headers };
+};
+
 export function createApiRequest<
   R extends CreationRequestConfig<B>,
   P,
@@ -124,7 +129,7 @@ export function createApiRequest<
       method: HttpMethod;
     },
     { result: ApiRequestResult; meta: { headers: Headers } },
-    ApiRequestError
+    ApiRequestErrorWithMeta
   >(
     async ({
       url,
@@ -145,23 +150,34 @@ export function createApiRequest<
         signal: abortController?.signal,
       });
 
-      const response = await requestFx(request).catch((cause) => {
-        if (config.response.transformError) {
-          throw config.response.transformError(cause);
+      const response = await requestFx(request).catch((cause: RequestError) => {
+        // cause is { error, responseMeta? }
+        const transformedError =
+          config.response.transformError?.(cause.error) ?? cause.error;
+
+        // Re-throw with responseMeta preserved
+        throw { error: transformedError, responseMeta: cause.responseMeta };
+      });
+
+      const [forPrepare, forError] = response.body?.tee() ?? [null, null];
+      const responseHeaders = response.headers;
+
+      const prepared = await prepareFx(new Response(forPrepare, response)).then(
+        async (result) => {
+          await drain(forError);
+
+          return result;
+        },
+        async (cause) => {
+          throw {
+            error: preparationError({
+              response: await new Response(forError).text(),
+              reason: cause?.message ?? null,
+            }),
+            responseMeta: { headers: responseHeaders },
+          };
         }
-
-        throw cause;
-      });
-
-      // We cannot read body of the response twice (prepareFx and throw preparationError)
-      const clonedResponse = response.clone();
-
-      const prepared = await prepareFx(response).catch(async (cause) => {
-        throw preparationError({
-          response: await clonedResponse.text(),
-          reason: cause?.message ?? null,
-        });
-      });
+      );
 
       if (config.response.status) {
         const expected = Array.isArray(config.response.status.expected)
@@ -169,14 +185,17 @@ export function createApiRequest<
           : [config.response.status.expected];
 
         if (!expected.includes(response.status)) {
-          throw invalidDataError({
-            validationErrors: [
-              `Expected response status has to be one of [${expected.join(
-                ', '
-              )}], got ${response.status}`,
-            ],
-            response: prepared,
-          });
+          throw {
+            error: invalidDataError({
+              validationErrors: [
+                `Expected response status has to be one of [${expected.join(
+                  ', '
+                )}], got ${response.status}`,
+              ],
+              response: prepared,
+            }),
+            responseMeta: { headers: responseHeaders },
+          };
         }
       }
 

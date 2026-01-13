@@ -34,10 +34,13 @@ describe('createJsonApi', () => {
       });
 
       expect(watcher.listeners.onFailData).toBeCalledWith(
-        httpError({
-          status: 500,
-          statusText: '',
-          response: { customError: true },
+        expect.objectContaining({
+          error: httpError({
+            status: 500,
+            statusText: '',
+            response: { customError: true },
+          }),
+          responseMeta: expect.objectContaining({ headers: expect.anything() }),
         })
       );
     });

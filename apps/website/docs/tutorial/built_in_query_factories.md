@@ -110,7 +110,6 @@ Built-in factories consider any response as `unknown` by default, so you have to
 `createJsonQuery` does some additional job to make your life easier. It does the following:
 
 - Add `Content-Type: application/json` header to the request
-- Apply `TAKE_LATEST` strategy and cancel all previous requests, you can override this behavior by passing `concurrency.strategy` option to the factory
 - Parse the response as JSON
 
 ## Custom factories

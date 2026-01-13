@@ -40,20 +40,16 @@ Config fields:
     - `params`: params which were passed to the [_Query_](/api/primitives/query)
     - `headers`: <Badge type="tip" text="since v0.13" /> raw response headers
 
-- `concurrency?`: concurrency settings for the [_Query_](/api/primitives/query)
-  ::: danger Deprecation warning
+  - `mapError?`: <Badge type="tip" text="since v0.14" /> optional mapper for the error data, available overloads:
 
-  This field is deprecated since [v0.12](/releases/0-12) and will be removed in v0.14. Use [`concurrency` operator](/api/operators/concurrency) instead.
+    - `(err) => mapped`
+    - `{ source: Store, fn: (err, data) => mapped }`
 
-  Please read [this ADR](/adr/concurrency) for more information and migration guide.
+    `err` object contains:
 
-  :::
-
-  - `strategy?`: available values:
-    - `TAKE_EVERY` execute every request
-    - `TAKE_FIRST` skip all requests if there is a pending one
-    - `TAKE_LATEST` (**default value**) cancel all pending requests and execute the latest one
-  - `abort?`: [_Event_](https://effector.dev/en/api/effector/event/) after calling which all in-flight requests will be aborted
+    - `error`: the error that occurred (can be `HttpError`, `NetworkError`, `InvalidDataError`, or `PreparationError`)
+    - `params`: params which were passed to the [_Query_](/api/primitives/query)
+    - `headers`: raw response headers (available for HTTP errors and contract/validation errors, not available for network errors)
 
 ## Showcases
 

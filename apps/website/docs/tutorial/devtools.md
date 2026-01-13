@@ -56,6 +56,22 @@ if (process.env.NODE_ENV === 'development') {
 
 That is it, now you can open Farfetched Dev Tools in your browser and see all your [_Queries_](/api/primitives/query) and its states.
 
+## Log all errors
+
+You can enable logging of all failed [_Queries_](/api/primitives/query) to console by passing `logErrorsToConsole` field to `attachFarfetchedDevTools` function.
+
+```ts
+// main.ts
+
+if (process.env.NODE_ENV === 'development') {
+  const { attachFarfetchedDevTools } = await import('@farfetched/dev-tools');
+
+  attachFarfetchedDevTools({
+    logErrorsToConsole: true, // [!code focus]
+  });
+}
+```
+
 ## Roadmap
 
 ::: tip

@@ -4,7 +4,6 @@ import {
   createStore,
   sample,
   createEvent,
-  attach,
   split,
   withRegion,
 } from 'effector';
@@ -23,7 +22,6 @@ import {
 } from '../libs/patronus';
 import { type Validator } from '../validation/type';
 import { type Query, type QueryMeta, QuerySymbol } from './type';
-import { type ExecutionMeta } from '../remote_operation/type';
 import { isEqual } from '../libs/lohyphen';
 import { readonly } from '../libs/patronus';
 import { createMetaNode } from '../inspect';
@@ -47,8 +45,10 @@ export function createHeadlessQuery<
   Error,
   ContractData extends Response,
   MappedData,
-  MapDataSource,
-  ValidationSource,
+  MappedError = Error | InvalidDataError,
+  MapDataSource = void,
+  mapErrorSource = void,
+  ValidationSource = void,
   Initial = null,
 >(
   config: {
@@ -59,15 +59,21 @@ export function createHeadlessQuery<
       MappedData,
       MapDataSource
     >;
+    mapError?: DynamicallySourcedField<
+      { error: Error | InvalidDataError; params: Params; headers?: Headers },
+      MappedError,
+      mapErrorSource
+    >;
     validate?: Validator<ContractData, Params, ValidationSource>;
     sourced?: SourcedField<Params, unknown, unknown>[];
     paramsAreMeaningless?: boolean;
   } & SharedQueryFactoryConfig<MappedData, Initial>
-): Query<Params, MappedData, Error | InvalidDataError, Initial> {
+): Query<Params, MappedData, MappedError, Initial> {
   const {
     initialData: initialDataRaw,
     contract,
     mapData,
+    mapError,
     enabled,
     validate,
     name,
@@ -83,8 +89,10 @@ export function createHeadlessQuery<
     ContractData,
     MappedData,
     Error,
+    MappedError,
     QueryMeta<MappedData, Initial>,
     MapDataSource,
+    mapErrorSource,
     ValidationSource
   >({
     name: name ?? getFactoryName(),
@@ -99,6 +107,7 @@ export function createHeadlessQuery<
     contract,
     validate,
     mapData,
+    mapError,
     sourced,
     paramsAreMeaningless,
   });
@@ -112,7 +121,7 @@ export function createHeadlessQuery<
     serialize,
     skipVoid: false,
   });
-  const $error = createStore<Error | InvalidDataError | null>(null, {
+  const $error = createStore<MappedError | null>(null, {
     sid: `ff.${operation.__.meta.name}.$error`,
     name: `${operation.__.meta.name}.$error`,
     serialize: serializationForSideStore(serialize),
@@ -213,44 +222,6 @@ export function createHeadlessQuery<
   };
   const unitShapeProtocol = () => unitShape;
 
-  // Experimental API, won't be exposed as protocol for now
-  const attachProtocol = <NewParams, Source>({
-    source,
-    mapParams,
-  }: {
-    source: Store<Source>;
-    mapParams: (params: NewParams, source: Source) => Params;
-  }) => {
-    const attachedQuery = createHeadlessQuery<
-      NewParams,
-      Response,
-      unknown,
-      ContractData,
-      MappedData,
-      MapDataSource,
-      ValidationSource,
-      Initial
-    >(config as any);
-
-    attachedQuery.__.lowLevelAPI.dataSourceRetrieverFx.use(
-      attach({
-        source,
-        mapParams: (
-          { params, ...rest }: { params: NewParams; meta: ExecutionMeta },
-          sourceValue
-        ): { params: Params; meta: ExecutionMeta } => ({
-          params: (mapParams
-            ? mapParams(params, sourceValue)
-            : params) as Params,
-          ...rest,
-        }),
-        effect: operation.__.lowLevelAPI.dataSourceRetrieverFx,
-      })
-    );
-
-    return attachedQuery;
-  };
-
   // -- Public API --
 
   const metaNode = createMetaNode(
@@ -284,7 +255,6 @@ export function createHeadlessQuery<
       __: {
         ...operation.__,
         lowLevelAPI: { ...operation.__.lowLevelAPI, refreshSkipDueToFreshness },
-        experimentalAPI: { attach: attachProtocol },
       },
       '@@unitShape': unitShapeProtocol,
     };
