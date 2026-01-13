@@ -45,8 +45,9 @@ export interface ExclusiveRequestConfigShared {
   abortController?: AbortController;
 }
 
-export interface ExclusiveRequestConfig<B>
-  extends ExclusiveRequestConfigShared {
+export interface ExclusiveRequestConfig<
+  B,
+> extends ExclusiveRequestConfigShared {
   body?: B;
 }
 

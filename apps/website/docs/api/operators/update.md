@@ -31,7 +31,6 @@ An update rule can be either:
 An update rule function accepts two arguments:
 
 - `state` - an object with the following fields:
-
   - `query` - current [_Query_](/api/primitives/query) state
   - `mutation` - current [_Mutation_](/api/primitives/mutation) state
 

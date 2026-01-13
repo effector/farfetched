@@ -18,7 +18,7 @@ describe('fetch/api.response.prepare', () => {
   test('pass original response to preparation', async () => {
     const reportResult = vi.fn();
     const extractMock = vi.fn().mockImplementation(async (t: Response) => {
-      const result = await t.text()
+      const result = await t.text();
       reportResult(result);
       return result;
     });

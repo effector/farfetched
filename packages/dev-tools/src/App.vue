@@ -40,8 +40,9 @@ const search = useVModel($search);
 
   & * {
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, Roboto, Inter, Helvetica,
-      Arial, sans-serif;
+    font-family:
+      -apple-system, BlinkMacSystemFont, Roboto, Inter, Helvetica, Arial,
+      sans-serif;
   }
 }
 

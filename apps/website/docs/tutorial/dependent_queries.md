@@ -61,7 +61,6 @@ To determine that data in the [Query](/api/primitives/query) is outdated (e.g. b
 ::: details The typical flow of statuses changes with two dependent queries
 
 1. Start of the application
-
    - Parent
      - `characterQuery.$status` is "initial"
      - `characterQuery.$stale` is false
@@ -70,7 +69,6 @@ To determine that data in the [Query](/api/primitives/query) is outdated (e.g. b
      - `originQuery.$stale` is false
 
 2. Call `characterQuery.start({ id: 1 })`
-
    - Parent
      - `characterQuery.$status` is "pending" 🚨
      - `characterQuery.$stale` is false
@@ -79,7 +77,6 @@ To determine that data in the [Query](/api/primitives/query) is outdated (e.g. b
      - `originQuery.$stale` is true 🚨
 
 3. `characterQuery` successfully finished execution, `originQuery` is immediately started with the parameters returned by `fn` in `connectQuery`
-
    - Parent
      - `characterQuery.$status` is "success"
      - `characterQuery.$stale` is false
@@ -88,7 +85,6 @@ To determine that data in the [Query](/api/primitives/query) is outdated (e.g. b
      - `originQuery.$stale` is true 🚨
 
 4. `originQuery` successfully finished execution
-
    - Parent
      - `characterQuery.$status` is "success"
      - `characterQuery.$stale` is false
