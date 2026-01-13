@@ -5,7 +5,7 @@
     "access": "public"
   },
   "license": "MIT",
-  "repository": "github:igorkamyshev/farfetched",
+  "repository": "github:effector/farfetched",
   "devDependencies": {
     "typed-contracts": "^3.0.0",
     "@farfetched/core": "workspace:*"
