@@ -20,7 +20,7 @@ export default {
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['zod'],
+      external: ['zod', 'zod/v3', 'zod/v4/core'],
     },
   },
 };
