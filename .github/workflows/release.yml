@@ -21,6 +21,5 @@ jobs:
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
         shell: sh
-      - run: pnpm whoami
       - run: pnpm run -r build
       - run: pnpm -r publish --no-git-checks
