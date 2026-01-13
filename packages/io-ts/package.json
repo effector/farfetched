@@ -5,7 +5,7 @@
     "access": "public"
   },
   "license": "MIT",
-  "repository": "https://github.com/igorkamyshev/farfetched",
+  "repository": "github:igorkamyshev/farfetched",
   "devDependencies": {
     "io-ts": "^2.2.20",
     "fp-ts": "^2.13.1",
