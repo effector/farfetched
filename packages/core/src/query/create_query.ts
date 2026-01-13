@@ -19,19 +19,19 @@ type OptionalParams<Args extends any[]> = Args['length'] extends 0 // does handl
   ? void // works since TS v3.3.3
   : 0 | 1 extends Args['length'] // is the first argument optional?
     ? /**
-       * Applying `infer` to a variadic arguments here we'll get `Args` of
-       * shape `[T]` or `[T?]`, where T(?) is a type of handler `params`.
-       * In case T is optional we get `T | undefined` back from `Args[0]`.
-       * We lose information about argument's optionality, but we can make it
-       * optional again by appending `void` type, so the result type will be
-       * `T | undefined | void`.
-       *
-       * The disadvantage of this method is that we can't restore optonality
-       * in case of `params?: any` because in a union `any` type absorbs any
-       * other type (`any | undefined | void` becomes just `any`). And we
-       * have similar situation also with the `unknown` type.
-       */
-      Args[0] | void
+         * Applying `infer` to a variadic arguments here we'll get `Args` of
+         * shape `[T]` or `[T?]`, where T(?) is a type of handler `params`.
+         * In case T is optional we get `T | undefined` back from `Args[0]`.
+         * We lose information about argument's optionality, but we can make it
+         * optional again by appending `void` type, so the result type will be
+         * `T | undefined | void`.
+         *
+         * The disadvantage of this method is that we can't restore optonality
+         * in case of `params?: any` because in a union `any` type absorbs any
+         * other type (`any | undefined | void` becomes just `any`). And we
+         * have similar situation also with the `unknown` type.
+         */
+        Args[0] | void
     : Args[0];
 
 // Overload: Only handler

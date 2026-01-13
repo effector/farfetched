@@ -4,8 +4,8 @@
 
 import { allSettled, fork, sample, scopeBind } from 'effector';
 import { describe, expect, test, afterEach, vi } from 'vitest';
-import { ErrorBoundary, For, Suspense } from 'solid-js/web';
-import { render, cleanup, screen } from 'solid-testing-library';
+import { ErrorBoundary, For, Suspense } from 'solid-js';
+import { render, cleanup, screen } from '@solidjs/testing-library';
 import { Provider } from 'effector-solid';
 import {
   createMutation,
@@ -130,7 +130,8 @@ describe('createQueryResource', () => {
     defer.reject('WOW');
     await allSettled(scope);
 
-    const errorText = await screen.findByText('Error: WOW');
+    // solid-js wraps rejected values in Error objects, so error.toString() gives "Error: WOW"
+    const errorText = await screen.findByText('Error: Error: WOW');
     expect(errorText).toBeInTheDocument();
   });
 

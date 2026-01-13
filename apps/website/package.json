@@ -2,6 +2,7 @@
   "name": "website",
   "private": true,
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "prepare": "node changelog/cli.mjs",
     "dev": "pnpm prepare && vitepress dev docs",

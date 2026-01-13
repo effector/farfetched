@@ -5,7 +5,7 @@
     "access": "public"
   },
   "license": "MIT",
-  "repository": "https://github.com/igorkamyshev/farfetched",
+  "repository": "github:igorkamyshev/farfetched",
   "dependencies": {
     "@apideck/better-ajv-errors": "^0.3.6",
     "ajv": "^8.12.0",

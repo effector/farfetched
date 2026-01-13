@@ -27,8 +27,9 @@ export interface PreparationError extends FarfetchedError<typeof PREPARATION> {
 }
 
 export const HTTP = 'HTTP';
-export interface HttpError<Status extends number = number>
-  extends FarfetchedError<typeof HTTP> {
+export interface HttpError<
+  Status extends number = number,
+> extends FarfetchedError<typeof HTTP> {
   status: Status;
   statusText: string;
   response: string | Json | null;
@@ -41,7 +42,8 @@ export interface NetworkError extends FarfetchedError<typeof NETWORK> {
 }
 
 export const CONFIGURATION = 'CONFIGURATION';
-export interface ConfigurationError
-  extends FarfetchedError<typeof CONFIGURATION> {
+export interface ConfigurationError extends FarfetchedError<
+  typeof CONFIGURATION
+> {
   validationErrors: string[];
 }

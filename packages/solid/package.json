@@ -5,17 +5,17 @@
     "access": "public"
   },
   "license": "MIT",
-  "repository": "https://github.com/igorkamyshev/farfetched",
+  "repository": "github:igorkamyshev/farfetched",
   "devDependencies": {
     "effector-solid": "^0.23.0",
     "effector": "^23.0.0",
-    "solid-js": "^1.4.7",
+    "solid-js": "^1.9.0",
     "@farfetched/core": "workspace:*"
   },
   "peerDependencies": {
     "effector-solid": "^0.23.0",
     "effector": "^23.0.0",
-    "solid-js": "^1.4.7",
+    "solid-js": "^1.9.0",
     "@farfetched/core": "workspace:*"
   },
   "scripts": {

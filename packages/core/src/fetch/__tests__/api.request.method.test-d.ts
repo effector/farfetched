@@ -21,11 +21,14 @@ describe('createApiRequest request.method', () => {
     });
 
     expectTypeOf(callApiFx).toBeCallableWith({ url });
-    expectTypeOf(callApiFx).toBeCallableWith({
-      // @ts-expect-error should be callable without method
-      method: 'GET' as const,
-      url,
-    });
+
+    () => {
+      callApiFx({
+        url,
+        // @ts-expect-error should be callable without method
+        method: 'GET',
+      });
+    };
   });
 
   test('reactive method', () => {
@@ -37,10 +40,12 @@ describe('createApiRequest request.method', () => {
     });
 
     expectTypeOf(callApiFx).toBeCallableWith({ url });
-    expectTypeOf(callApiFx).toBeCallableWith({
-      // @ts-expect-error should be callable without method
-      method: 'GET' as const,
-      url,
-    });
+    () => {
+      callApiFx({
+        url,
+        // @ts-expect-error should be callable without method
+        method: 'GET',
+      });
+    };
   });
 });

@@ -8,11 +8,10 @@ export default defineConfig({
     tsconfigPaths(),
     solid({
       /*
-       * solid plugin supports only .tsx and .jsx files by default
-       */
-      extensions: ['.ts'],
-      /*
        * @farfetched/dev-tools is better when effector/babel-plugin is used
+       * Note: Only .tsx/.jsx files are processed by default.
+       * Pure .ts files with generics should NOT be included here
+       * as the JSX parser misinterprets TypeScript generics <T> as JSX tags.
        */
       babel: {
         plugins: [

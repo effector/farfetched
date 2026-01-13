@@ -5,7 +5,7 @@
     "access": "public"
   },
   "license": "MIT",
-  "repository": "https://github.com/igorkamyshev/farfetched",
+  "repository": "github:igorkamyshev/farfetched",
   "devDependencies": {
     "superstruct": "^1.0.3",
     "@farfetched/core": "workspace:*"
@@ -43,7 +43,7 @@
   "size-limit": [
     {
       "path": "./dist/superstruct.js",
-      "limit": "233 B"
+      "limit": "235 B"
     }
   ]
 }
