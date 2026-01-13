@@ -21,7 +21,7 @@ importers:
         version: 0.9.1(effector@23.0.0)(history@5.3.0)
       atomic-router-solid:
         specifier: 0.8.1
-        version: 0.8.1(atomic-router@0.9.1(effector@23.0.0)(history@5.3.0))(effector-solid@0.23.0(effector@23.0.0)(solid-js@1.9.0))(effector@23.0.0)(history@5.3.0)(solid-js@1.9.0)
+        version: 0.8.1(atomic-router@0.9.1(effector@23.0.0)(history@5.3.0))(effector-solid@0.23.0(effector@23.0.0)(solid-js@1.9.4))(effector@23.0.0)(history@5.3.0)(solid-js@1.9.4)
       effector:
         specifier: 23.0.0
         version: 23.0.0
@@ -30,7 +30,7 @@ importers:
         version: 23.0.0(effector@23.0.0)(react@18.2.0)
       effector-solid:
         specifier: 0.23.0
-        version: 0.23.0(effector@23.0.0)(solid-js@1.9.0)
+        version: 0.23.0(effector@23.0.0)(solid-js@1.9.4)
       effector-vue:
         specifier: 23.0.0
         version: 23.0.0(@vue/reactivity@3.5.26)(@vue/runtime-core@3.5.26)(effector@23.0.0)(vue@3.5.26(typescript@5.2.2))
@@ -59,8 +59,8 @@ importers:
         specifier: ^3.1.9
         version: 3.1.12(vue@3.5.26(typescript@5.2.2))
       solid-js:
-        specifier: ~1.9.0
-        version: 1.9.0
+        specifier: ~1.9.4
+        version: 1.9.4
       typed-contracts:
         specifier: ^3.0.0
         version: 3.0.0
@@ -88,7 +88,7 @@ importers:
         version: 7.0.8(size-limit@7.0.8)
       '@solidjs/testing-library':
         specifier: ^0.8.10
-        version: 0.8.10(solid-js@1.9.0)
+        version: 0.8.10(solid-js@1.9.4)
       '@testing-library/jest-dom':
         specifier: ^5.16.5
         version: 5.17.0
@@ -163,7 +163,7 @@ importers:
         version: 2.2.2(vite@7.3.1(@types/node@24.1.0))
       vite-plugin-solid:
         specifier: ~2.11.10
-        version: 2.11.10(@testing-library/jest-dom@5.17.0)(solid-js@1.9.0)(vite@7.3.1(@types/node@24.1.0))
+        version: 2.11.10(@testing-library/jest-dom@5.17.0)(solid-js@1.9.4)(vite@7.3.1(@types/node@24.1.0))
       vite-tsconfig-paths:
         specifier: 6.0.4
         version: 6.0.4(typescript@5.2.2)(vite@7.3.1(@types/node@24.1.0))
@@ -302,10 +302,10 @@ importers:
         version: 23.0.0
       effector-solid:
         specifier: ^0.23.0
-        version: 0.23.0(effector@23.0.0)(solid-js@1.9.0)
+        version: 0.23.0(effector@23.0.0)(solid-js@1.9.4)
       solid-js:
-        specifier: ^1.9.0
-        version: 1.9.0
+        specifier: ^1.9.4
+        version: 1.9.4
 
   packages/superstruct:
     devDependencies:
@@ -3603,8 +3603,8 @@ packages:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
 
-  solid-js@1.9.0:
-    resolution: {integrity: sha512-MDRx9+mtTBYfaY+Xy+F+GI57U04uYXj/I7jWQISzDUTvDXKOiPltOzoCSLXn0vk5mhs/OPZlG0UoWBaKPvlWBQ==}
+  solid-js@1.9.4:
+    resolution: {integrity: sha512-ipQl8FJ31bFUoBNScDQTG3BjN6+9Rg+Q+f10bUbnO6EOTTf5NGerJeHc7wyu5I4RMHEl/WwZwUmy/PTRgxxZ8g==}
 
   solid-refresh@0.6.3:
     resolution: {integrity: sha512-F3aPsX6hVw9ttm5LYlth8Q15x6MlI/J3Dn+o3EQyRTtTxidepSTwAYdozt01/YA+7ObcciagGEyXIopGZzQtbA==}
@@ -5467,10 +5467,10 @@ snapshots:
       semver: 7.3.5
       size-limit: 7.0.8
 
-  '@solidjs/testing-library@0.8.10(solid-js@1.9.0)':
+  '@solidjs/testing-library@0.8.10(solid-js@1.9.4)':
     dependencies:
       '@testing-library/dom': 10.4.1
-      solid-js: 1.9.0
+      solid-js: 1.9.4
 
   '@standard-schema/spec@1.1.0': {}
 
@@ -5934,14 +5934,14 @@ snapshots:
 
   assertion-error@2.0.1: {}
 
-  atomic-router-solid@0.8.1(atomic-router@0.9.1(effector@23.0.0)(history@5.3.0))(effector-solid@0.23.0(effector@23.0.0)(solid-js@1.9.0))(effector@23.0.0)(history@5.3.0)(solid-js@1.9.0):
+  atomic-router-solid@0.8.1(atomic-router@0.9.1(effector@23.0.0)(history@5.3.0))(effector-solid@0.23.0(effector@23.0.0)(solid-js@1.9.4))(effector@23.0.0)(history@5.3.0)(solid-js@1.9.4):
     dependencies:
       atomic-router: 0.9.1(effector@23.0.0)(history@5.3.0)
       classcat: 5.0.5
       effector: 23.0.0
-      effector-solid: 0.23.0(effector@23.0.0)(solid-js@1.9.0)
+      effector-solid: 0.23.0(effector@23.0.0)(solid-js@1.9.4)
       history: 5.3.0
-      solid-js: 1.9.0
+      solid-js: 1.9.4
 
   atomic-router@0.9.1(effector@23.0.0)(history@5.3.0):
     dependencies:
@@ -5958,12 +5958,12 @@ snapshots:
       html-entities: 2.3.3
       parse5: 7.3.0
 
-  babel-preset-solid@1.9.10(@babel/core@7.28.6)(solid-js@1.9.0):
+  babel-preset-solid@1.9.10(@babel/core@7.28.6)(solid-js@1.9.4):
     dependencies:
       '@babel/core': 7.28.6
       babel-plugin-jsx-dom-expressions: 0.40.3(@babel/core@7.28.6)
     optionalDependencies:
-      solid-js: 1.9.0
+      solid-js: 1.9.4
 
   balanced-match@1.0.2: {}
 
@@ -6550,10 +6550,10 @@ snapshots:
       react: 18.2.0
       use-sync-external-store: 1.6.0(react@18.2.0)
 
-  effector-solid@0.23.0(effector@23.0.0)(solid-js@1.9.0):
+  effector-solid@0.23.0(effector@23.0.0)(solid-js@1.9.4):
     dependencies:
       effector: 23.0.0
-      solid-js: 1.9.0
+      solid-js: 1.9.4
 
   effector-vue@23.0.0(@vue/reactivity@3.5.26)(@vue/runtime-core@3.5.26)(effector@23.0.0)(vue@3.5.26(typescript@5.2.2)):
     dependencies:
@@ -7641,18 +7641,18 @@ snapshots:
 
   slash@3.0.0: {}
 
-  solid-js@1.9.0:
+  solid-js@1.9.4:
     dependencies:
       csstype: 3.2.3
       seroval: 1.4.2
       seroval-plugins: 1.4.2(seroval@1.4.2)
 
-  solid-refresh@0.6.3(solid-js@1.9.0):
+  solid-refresh@0.6.3(solid-js@1.9.4):
     dependencies:
       '@babel/generator': 7.28.6
       '@babel/helper-module-imports': 7.28.6
       '@babel/types': 7.28.6
-      solid-js: 1.9.0
+      solid-js: 1.9.4
     transitivePeerDependencies:
       - supports-color
 
@@ -7898,14 +7898,14 @@ snapshots:
       picocolors: 1.1.1
       vite: 7.3.1(@types/node@24.1.0)
 
-  vite-plugin-solid@2.11.10(@testing-library/jest-dom@5.17.0)(solid-js@1.9.0)(vite@7.3.1(@types/node@24.1.0)):
+  vite-plugin-solid@2.11.10(@testing-library/jest-dom@5.17.0)(solid-js@1.9.4)(vite@7.3.1(@types/node@24.1.0)):
     dependencies:
       '@babel/core': 7.28.6
       '@types/babel__core': 7.20.5
-      babel-preset-solid: 1.9.10(@babel/core@7.28.6)(solid-js@1.9.0)
+      babel-preset-solid: 1.9.10(@babel/core@7.28.6)(solid-js@1.9.4)
       merge-anything: 5.1.7
-      solid-js: 1.9.0
-      solid-refresh: 0.6.3(solid-js@1.9.0)
+      solid-js: 1.9.4
+      solid-refresh: 0.6.3(solid-js@1.9.4)
       vite: 7.3.1(@types/node@24.1.0)
       vitefu: 1.1.1(vite@7.3.1(@types/node@24.1.0))
     optionalDependencies:
