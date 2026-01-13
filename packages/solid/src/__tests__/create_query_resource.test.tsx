@@ -5,7 +5,7 @@
 import { allSettled, fork, sample, scopeBind } from 'effector';
 import { describe, expect, test, afterEach, vi } from 'vitest';
 import { ErrorBoundary, For, Suspense } from 'solid-js/web';
-import { render, cleanup, screen } from 'solid-testing-library';
+import { render, cleanup, screen } from '@solidjs/testing-library';
 import { Provider } from 'effector-solid';
 import {
   createMutation,
