@@ -8,12 +8,6 @@ export default {
   test: {
     globals: true,
     setupFiles: './test.setup.ts',
-    pool: 'threads',
-    poolOptions: {
-      threads: {
-        useAtomics: true,
-      },
-    },
   },
   resolve: {
     conditions: ['browser'],
