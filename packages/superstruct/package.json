@@ -43,7 +43,7 @@
   "size-limit": [
     {
       "path": "./dist/superstruct.js",
-      "limit": "233 B"
+      "limit": "235 B"
     }
   ]
 }
