@@ -20,8 +20,6 @@ jobs:
           node-version-file: '.nvmrc'
           cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
-      - run: |
-          echo "//registry.npmjs.org/:_authToken="${{secrets.NPM_TOKEN}}"" > ~/.npmrc
         shell: sh
       - run: pnpm whoami
       - run: pnpm run -r build
