@@ -1,5 +1,18 @@
 # @farfetched/valibot
 
+## 0.14.0
+
+### Patch Changes
+
+- Updated dependencies [3a319bc]
+- Updated dependencies [9e89fb8]
+- Updated dependencies [6efc16a]
+- Updated dependencies [0d3bcb0]
+- Updated dependencies [e12648e]
+- Updated dependencies [4035fee]
+- Updated dependencies [3c0c3a9]
+  - @farfetched/core@0.14.0
+
 ## 0.13.2
 
 ### Patch Changes

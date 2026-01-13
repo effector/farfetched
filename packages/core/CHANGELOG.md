@@ -1,5 +1,20 @@
 # @farfetched/core
 
+## 0.14.0
+
+### Minor Changes
+
+- 9e89fb8: Delete `concurrency` field in favour of `concurrency` operator
+- 0d3bcb0: Delete `attachOperation` operator
+- 4035fee: Added a new feature - `mapError` mapper to all Queries and Mutations
+
+### Patch Changes
+
+- 3a319bc: Fix retry operator to not retry abort errors from concurrency policies. Previously, when using `concurrency` with `TAKE_LATEST` strategy alongside `retry`, abort errors could leak through the retry mechanism, causing unnecessary retry attempts for intentionally cancelled requests. Now abort errors are automatically filtered out before retry logic is applied.
+- 6efc16a: Get rid off `response.clone()` to support streaming in edge runtimes
+- e12648e: Export `ExecutionMeta`
+- 3c0c3a9: Export `attachObservability`
+
 ## 0.13.2
 
 ### Patch Changes
