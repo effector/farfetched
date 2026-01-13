@@ -5,9 +5,10 @@ import * as path from 'node:path';
 export default function typesPlugin() {
   return dts({
     entryRoot: 'src',
-    tsConfigFilePath: 'tsconfig.json',
-    skipDiagnostics: true,
+    tsconfigPath: 'tsconfig.json',
     rollupTypes: true,
+    // Exclude workspace packages from alias resolution to keep them as external imports
+    aliasesExclude: [/^@farfetched\//],
     async afterBuild() {
       const files = await readdir('dist');
       const dtsFiles = files.filter((file) => file.endsWith('.d.ts'));
