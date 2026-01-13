@@ -16,7 +16,12 @@ describe('fetch/api.response.prepare', () => {
   };
 
   test('pass original response to preparation', async () => {
-    const extractMock = vi.fn().mockImplementation((t) => t.text());
+    const reportResult = vi.fn();
+    const extractMock = vi.fn().mockImplementation(async (t: Response) => {
+      const result = await t.text()
+      reportResult(result);
+      return result;
+    });
 
     const apiCallFx = createApiRequest({
       request,
@@ -34,7 +39,7 @@ describe('fetch/api.response.prepare', () => {
       params: {},
     });
 
-    expect(extractMock).toReturnWith('ok');
+    expect(reportResult).toBeCalledWith('ok');
   });
 });
 
