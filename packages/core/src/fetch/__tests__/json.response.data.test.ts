@@ -106,4 +106,53 @@ describe('fetch/json.response.data', () => {
       meta: expect.anything(),
     });
   });
+
+  describe('null body status responses', () => {
+    test('204 No Content response returns null', async () => {
+      const callJsonApiFx = createJsonApiRequest({ request });
+
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(new Response(null, { status: 204 }));
+
+      const scope = fork({ handlers: [[fetchFx, fetchMock]] });
+
+      const watcher = watchEffect(callJsonApiFx, scope);
+
+      await allSettled(callJsonApiFx, {
+        scope,
+        params: {},
+      });
+
+      expect(watcher.listeners.onFailData).not.toBeCalled();
+      expect(watcher.listeners.onDoneData).toBeCalledWith({
+        result: null,
+        meta: expect.anything(),
+      });
+    });
+
+    test('205 Reset Content response returns null', async () => {
+      const callJsonApiFx = createJsonApiRequest({ request });
+
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(new Response(null, { status: 205 }));
+
+      const scope = fork({ handlers: [[fetchFx, fetchMock]] });
+
+      const watcher = watchEffect(callJsonApiFx, scope);
+
+      await allSettled(callJsonApiFx, {
+        scope,
+        params: {},
+      });
+
+      expect(watcher.listeners.onFailData).not.toBeCalled();
+      expect(watcher.listeners.onDoneData).toBeCalledWith({
+        result: null,
+        meta: expect.anything(),
+      });
+    });
+
+  });
 });

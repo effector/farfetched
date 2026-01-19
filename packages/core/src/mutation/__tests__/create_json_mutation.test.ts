@@ -156,6 +156,61 @@ describe('createJsonMutation', () => {
     );
   });
 
+  test('handle 204 No Content response with DELETE method', async () => {
+    const mutation = createJsonMutation({
+      request: {
+        url: 'https://api.salo.com/resource/123',
+        method: 'DELETE' as const,
+      },
+      response: { contract: unknownContract },
+    });
+
+    const scope = fork({
+      handlers: [[fetchFx, () => new Response(null, { status: 204 })]],
+    });
+
+    const { listeners } = watchRemoteOperation(mutation, scope);
+
+    await allSettled(mutation.start, { scope });
+
+    expect(listeners.onFailure).not.toHaveBeenCalled();
+    expect(listeners.onSuccess).toHaveBeenCalled();
+    expect(listeners.onSuccess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: null,
+        params: undefined,
+      })
+    );
+  });
+
+  test('handle 204 No Content response with POST method', async () => {
+    const mutation = createJsonMutation({
+      request: {
+        url: 'https://api.salo.com/resource',
+        method: 'POST' as const,
+        body: { data: 'test' },
+      },
+      response: { contract: unknownContract },
+    });
+
+    const scope = fork({
+      handlers: [[fetchFx, () => new Response(null, { status: 204 })]],
+    });
+
+    const { listeners } = watchRemoteOperation(mutation, scope);
+
+    await allSettled(mutation.start, { scope });
+
+    expect(listeners.onFailure).not.toHaveBeenCalled();
+    expect(listeners.onSuccess).toHaveBeenCalled();
+    expect(listeners.onSuccess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        result: null,
+        params: undefined,
+      })
+    );
+  });
+
   test('cancel json mutation by external clock', async () => {
     const abort = createEvent();
 

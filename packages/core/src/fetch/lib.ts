@@ -1,5 +1,19 @@
 import { configurationError } from '../errors/create_error';
 
+/**
+ * HTTP status codes that indicate a null body response.
+ * Per the Fetch specification, responses with these status codes cannot have a body.
+ * Attempting to construct a Response with a body for these statuses throws:
+ * "TypeError: Response with null body status cannot have body"
+ *
+ * @see https://fetch.spec.whatwg.org/#null-body-status
+ */
+const NULL_BODY_STATUSES = new Set([101, 103, 204, 205, 304]);
+
+export function isNullBodyStatus(status: number): boolean {
+  return NULL_BODY_STATUSES.has(status);
+}
+
 export type FetchApiRecord = Record<
   string,
   string | string[] | number | boolean | null | undefined
