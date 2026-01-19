@@ -168,7 +168,7 @@ export function createApiRequest<
       const hasNullBodyStatus = isNullBodyStatus(response.status);
       const [forPrepare, forError] = hasNullBodyStatus
         ? [null, null]
-        : response.body?.tee() ?? [null, null];
+        : (response.body?.tee() ?? [null, null]);
 
       const prepared = await prepareFx(new Response(forPrepare, response)).then(
         async (result) => {

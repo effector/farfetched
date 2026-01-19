@@ -153,6 +153,5 @@ describe('fetch/json.response.data', () => {
         meta: expect.anything(),
       });
     });
-
   });
 });
