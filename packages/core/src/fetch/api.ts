@@ -15,6 +15,7 @@ import {
   formatUrl,
   mergeRecords,
   formatHeaders,
+  isNullBodyStatus,
   type FetchApiRecord,
   mergeQueryStrings,
 } from './lib';
@@ -160,8 +161,14 @@ export function createApiRequest<
         throw { error: transformedError, responseMeta: cause.responseMeta };
       });
 
-      const [forPrepare, forError] = response.body?.tee() ?? [null, null];
       const responseHeaders = response.headers;
+
+      // For null body statuses (101, 103, 204, 205, 304), the Response constructor
+      // throws if a body is provided, so we must use null body for these statuses.
+      const hasNullBodyStatus = isNullBodyStatus(response.status);
+      const [forPrepare, forError] = hasNullBodyStatus
+        ? [null, null]
+        : (response.body?.tee() ?? [null, null]);
 
       const prepared = await prepareFx(new Response(forPrepare, response)).then(
         async (result) => {
@@ -172,7 +179,7 @@ export function createApiRequest<
         async (cause) => {
           throw {
             error: preparationError({
-              response: await new Response(forError).text(),
+              response: forError ? await new Response(forError).text() : '',
               reason: cause?.message ?? null,
             }),
             responseMeta: { headers: responseHeaders },

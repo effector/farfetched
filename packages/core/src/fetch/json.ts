@@ -11,7 +11,7 @@ import {
   ExclusiveRequestConfigShared,
   StaticOnlyRequestConfig,
 } from './api';
-import { mergeRecords } from './lib';
+import { isNullBodyStatus, mergeRecords } from './lib';
 import { drain } from 'libs/lohyphen';
 
 export type JsonObject = Record<string, Json>;
@@ -109,6 +109,12 @@ export function createJsonApiRequest<R extends CreationRequestConfig>(
 async function checkEmptyResponse(
   response: Response
 ): Promise<[true, null] | [false, Response]> {
+  // Null body statuses (101, 103, 204, 205, 304) cannot have a body per the Fetch spec.
+  // We must check this early to avoid "Response with null body status cannot have body" error.
+  if (isNullBodyStatus(response.status)) {
+    return [true, null];
+  }
+
   if (!response.body) {
     return [true, null];
   }
