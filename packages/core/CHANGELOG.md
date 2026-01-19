@@ -1,5 +1,11 @@
 # @farfetched/core
 
+## 0.14.1
+
+### Patch Changes
+
+- d2a2afb: Fix "No Content" responses support
+
 ## 0.14.0
 
 ### Minor Changes
