@@ -1,5 +1,12 @@
 # @farfetched/dev-tools
 
+## 0.14.1
+
+### Patch Changes
+
+- Updated dependencies [d2a2afb]
+  - @farfetched/core@0.14.1
+
 ## 0.14.0
 
 ### Minor Changes
