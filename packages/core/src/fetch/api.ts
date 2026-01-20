@@ -174,10 +174,7 @@ export function createApiRequest<
 
       if (hasNullBodyStatus) {
         responseForPrepare = new Response(null, response);
-      } else if (
-        response.body &&
-        typeof response.body.tee === 'function'
-      ) {
+      } else if (response.body && typeof response.body.tee === 'function') {
         // Streams API available (browsers, edge runtimes)
         const [forPrepare, forError] = response.body.tee();
         responseForPrepare = new Response(forPrepare, response);

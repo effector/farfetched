@@ -50,9 +50,11 @@ describe('React Native compatibility (no Streams API)', () => {
     test('returns parsed json body when response.body is null', async () => {
       const callJsonApiFx = createJsonApiRequest({ request });
 
-      const fetchMock = vi.fn().mockResolvedValue(
-        createReactNativeResponse(JSON.stringify({ data: 'test-value' }))
-      );
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(
+          createReactNativeResponse(JSON.stringify({ data: 'test-value' }))
+        );
 
       const scope = fork({ handlers: [[fetchFx, fetchMock]] });
       const watcher = watchEffect(callJsonApiFx, scope);
@@ -94,9 +96,11 @@ describe('React Native compatibility (no Streams API)', () => {
     test('returns null for Content-Length: 0 when response.body is null', async () => {
       const callJsonApiFx = createJsonApiRequest({ request });
 
-      const fetchMock = vi.fn().mockResolvedValue(
-        createReactNativeResponse('', { headers: { 'Content-Length': '0' } })
-      );
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValue(
+          createReactNativeResponse('', { headers: { 'Content-Length': '0' } })
+        );
 
       const scope = fork({ handlers: [[fetchFx, fetchMock]] });
       const watcher = watchEffect(callJsonApiFx, scope);
@@ -172,11 +176,13 @@ describe('React Native compatibility (no Streams API)', () => {
 
     test('passes response to extract when response.body is null', async () => {
       const extractResult = vi.fn();
-      const extractMock = vi.fn().mockImplementation(async (response: Response) => {
-        const text = await response.text();
-        extractResult(text);
-        return text;
-      });
+      const extractMock = vi
+        .fn()
+        .mockImplementation(async (response: Response) => {
+          const text = await response.text();
+          extractResult(text);
+          return text;
+        });
 
       const apiCallFx = createApiRequest({
         request,
