@@ -166,20 +166,45 @@ export function createApiRequest<
       // For null body statuses (101, 103, 204, 205, 304), the Response constructor
       // throws if a body is provided, so we must use null body for these statuses.
       const hasNullBodyStatus = isNullBodyStatus(response.status);
-      const [forPrepare, forError] = hasNullBodyStatus
-        ? [null, null]
-        : (response.body?.tee() ?? [null, null]);
 
-      const prepared = await prepareFx(new Response(forPrepare, response)).then(
+      // Determine how to handle body cloning based on environment capabilities
+      let responseForPrepare: Response;
+      let responseForError: Response | null = null;
+      let streamForError: ReadableStream | null = null;
+
+      if (hasNullBodyStatus) {
+        responseForPrepare = new Response(null, response);
+      } else if (
+        response.body &&
+        typeof response.body.tee === 'function'
+      ) {
+        // Streams API available (browsers, edge runtimes)
+        const [forPrepare, forError] = response.body.tee();
+        responseForPrepare = new Response(forPrepare, response);
+        streamForError = forError;
+      } else {
+        // Fallback for React Native (no Streams API)
+        responseForPrepare = response.clone();
+        responseForError = response;
+      }
+
+      const prepared = await prepareFx(responseForPrepare).then(
         async (result) => {
-          await drain(forError);
+          await drain(streamForError);
 
           return result;
         },
         async (cause) => {
+          let errorResponseText = '';
+          if (streamForError) {
+            errorResponseText = await new Response(streamForError).text();
+          } else if (responseForError) {
+            errorResponseText = await responseForError.text();
+          }
+
           throw {
             error: preparationError({
-              response: forError ? await new Response(forError).text() : '',
+              response: errorResponseText,
               reason: cause?.message ?? null,
             }),
             responseMeta: { headers: responseHeaders },

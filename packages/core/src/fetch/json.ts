@@ -115,23 +115,32 @@ async function checkEmptyResponse(
     return [true, null];
   }
 
-  if (!response.body) {
-    return [true, null];
-  }
-
   const headerAsEmpty = response.headers.get('Content-Length') === '0';
   if (headerAsEmpty) {
     return [true, null];
   }
 
-  const [originalBody, clonedBody] = response.body.tee();
+  // Streams API available (browsers, edge runtimes)
+  if (response.body && typeof response.body.tee === 'function') {
+    const [originalBody, clonedBody] = response.body.tee();
 
-  const bodyAsText = await new Response(clonedBody).text();
+    const bodyAsText = await new Response(clonedBody).text();
+    if (bodyAsText.length === 0) {
+      await drain(originalBody);
+
+      return [true, null];
+    }
+
+    return [false, new Response(originalBody, response)];
+  }
+
+  // Fallback for React Native (no Streams API)
+  const clonedResponse = response.clone();
+  const bodyAsText = await clonedResponse.text();
+
   if (bodyAsText.length === 0) {
-    await drain(originalBody);
-
     return [true, null];
   }
 
-  return [false, new Response(originalBody, response)];
+  return [false, response];
 }
