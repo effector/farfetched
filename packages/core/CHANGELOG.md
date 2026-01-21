@@ -1,5 +1,11 @@
 # @farfetched/core
 
+## 0.14.2
+
+### Patch Changes
+
+- f64389b: Support React-Native Response object
+
 ## 0.14.1
 
 ### Patch Changes
