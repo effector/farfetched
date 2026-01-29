@@ -16,6 +16,7 @@ export { createHeadlessMutation } from './mutation/create_headless_mutation';
 export { createJsonMutation } from './mutation/create_json_mutation';
 
 // Retry public API
+export { type FailInfo } from './retry/retry';
 export { retry } from './retry/retry';
 export { exponentialDelay, linearDelay } from './retry/delay';
 
