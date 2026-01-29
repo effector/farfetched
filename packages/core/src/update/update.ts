@@ -49,7 +49,7 @@ export function update<
   Q extends Query<any, any, any, any>,
   M extends Mutation<any, any, any>,
   BySuccessSource = void,
-  ByFailureSource = void,
+  ByFailureSource = void
 >(
   query: Q,
   {
@@ -57,7 +57,7 @@ export function update<
     by: rules,
   }: {
     on: M;
-    by: {
+    by?: {
       success: DynamicallySourcedField<
         {
           query: QueryState<Q>;
@@ -94,12 +94,14 @@ export function update<
     refetch?: Refetch<Q>;
   }>();
 
+  const success = rules?.success || (() => ({ error: null, refetch: true }));
+
   split({
     source: sample({
       clock: mutation.finished.success,
       source: {
         partialRule: normalizeSourced({
-          field: rules.success,
+          field: success,
         }),
         queryState: $queryState,
       },
@@ -115,7 +117,7 @@ export function update<
     cases: { fillData: fillQueryData, __: fillQueryError },
   });
 
-  if (rules.failure) {
+  if (rules?.failure) {
     split({
       source: sample({
         clock: mutation.finished.failure,

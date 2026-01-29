@@ -117,6 +117,35 @@ describe('update', () => {
     expect(listeners.onStart).toBeCalledTimes(1); // only original call
   });
 
+  test('refetch true causes query to be refetched with latest params shorthand', async () => {
+    const query = createQuery({
+      handler: vi.fn().mockImplementation((params: number) => setTimeout(100).then(() => params.toString())),
+      initialData: 'initial',
+    });
+
+    const mutation = createMutation({ handler: vi.fn().mockResolvedValue('from mutation') });
+
+    update(query, { on: mutation });
+
+    const scope = fork();
+    const { listeners } = watchRemoteOperation(query, scope);
+
+    await allSettled(query.start, { scope, params: 1 });
+    await allSettled(query.start, { scope, params: 2 });
+
+    allSettled(mutation.start, { scope }); // Do not wait
+    await setTimeout(1); // Async nature of mutations
+    expect(scope.getState(query.$data)).toEqual('initial');
+    expect(scope.getState(query.$stale)).toBeTruthy();
+
+    await allSettled(scope);
+    expect(scope.getState(query.$data)).toEqual('2');
+
+    expect(listeners.onStart).toBeCalledTimes(3); // 2 original and 1 by refetch
+    expect(listeners.onStart).toHaveBeenNthCalledWith(3, 2); // refetch uses latest params
+    expect(scope.getState(query.$stale)).toBeFalsy();
+  });
+
   test('refetch true causes query to be refetched with latest params', async () => {
     const query = createQuery({
       handler: vi
