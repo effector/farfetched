@@ -2,4 +2,4 @@
 '@farfetched/core': minor
 ---
 
-Introduce `request.fetchOptions` feature to createJson\* methods
+Introduce `request.fetch` feature to createJson\* methods

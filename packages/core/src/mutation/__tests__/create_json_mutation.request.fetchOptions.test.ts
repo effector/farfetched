@@ -6,14 +6,14 @@ import { unknownContract } from '../../contract/unknown_contract';
 import { fetchFx } from '../../fetch/fetch';
 import { type FetchOptions } from '../../fetch/api';
 
-describe('remote_data/mutation/json.request.fetchOptions', () => {
-  test('pass static fetchOptions to request', async () => {
+describe('remote_data/mutation/json.request.fetch', () => {
+  test('pass static fetch config to request', async () => {
     const mutation = createJsonMutation({
       response: { contract: unknownContract },
       request: {
         url: 'http://api.salo.com',
         method: 'POST' as const,
-        fetchOptions: {
+        fetch: {
           mode: 'cors',
           cache: 'no-cache',
           referrerPolicy: 'no-referrer',
@@ -34,8 +34,8 @@ describe('remote_data/mutation/json.request.fetchOptions', () => {
     expect(request.referrerPolicy).toEqual('no-referrer');
   });
 
-  test('pass reactive fetchOptions to request', async () => {
-    const $fetchOptions = createStore<FetchOptions>({
+  test('pass reactive fetch config to request', async () => {
+    const $fetch = createStore<FetchOptions>({
       mode: 'cors',
       cache: 'no-cache',
     });
@@ -45,7 +45,7 @@ describe('remote_data/mutation/json.request.fetchOptions', () => {
       request: {
         url: 'http://api.salo.com',
         method: 'POST' as const,
-        fetchOptions: $fetchOptions,
+        fetch: $fetch,
       },
     });
 
@@ -60,7 +60,7 @@ describe('remote_data/mutation/json.request.fetchOptions', () => {
     expect(request.cache).toEqual('no-cache');
 
     // with new value
-    await allSettled($fetchOptions, {
+    await allSettled($fetch, {
       scope,
       params: { mode: 'no-cors', cache: 'force-cache' },
     });
@@ -70,14 +70,14 @@ describe('remote_data/mutation/json.request.fetchOptions', () => {
     expect(request.cache).toEqual('force-cache');
   });
 
-  test('top-level credentials takes precedence over fetchOptions.credentials', async () => {
+  test('top-level credentials takes precedence over fetch.credentials', async () => {
     const mutation = createJsonMutation({
       response: { contract: unknownContract },
       request: {
         url: 'http://api.salo.com',
         method: 'POST' as const,
         credentials: 'include',
-        fetchOptions: {
+        fetch: {
           credentials: 'omit',
           cache: 'no-cache',
         },
@@ -93,17 +93,17 @@ describe('remote_data/mutation/json.request.fetchOptions', () => {
     const request = fetchMock.mock.calls[0][0] as Request;
     // top-level credentials should win
     expect(request.credentials).toEqual('include');
-    // other fetchOptions should still apply
+    // other fetch options should still apply
     expect(request.cache).toEqual('no-cache');
   });
 
-  test('fetchOptions.credentials is used when top-level credentials is not set', async () => {
+  test('fetch.credentials is used when top-level credentials is not set', async () => {
     const mutation = createJsonMutation({
       response: { contract: unknownContract },
       request: {
         url: 'http://api.salo.com',
         method: 'POST' as const,
-        fetchOptions: {
+        fetch: {
           credentials: 'include',
         },
       },
@@ -119,13 +119,13 @@ describe('remote_data/mutation/json.request.fetchOptions', () => {
     expect(request.credentials).toEqual('include');
   });
 
-  test('pass fetchOptions with keepalive option', async () => {
+  test('pass fetch config with keepalive option', async () => {
     const mutation = createJsonMutation({
       response: { contract: unknownContract },
       request: {
         url: 'http://api.salo.com',
         method: 'POST' as const,
-        fetchOptions: {
+        fetch: {
           keepalive: true,
         },
       },
@@ -141,13 +141,13 @@ describe('remote_data/mutation/json.request.fetchOptions', () => {
     expect(request.keepalive).toEqual(true);
   });
 
-  test('pass fetchOptions with redirect option', async () => {
+  test('pass fetch config with redirect option', async () => {
     const mutation = createJsonMutation({
       response: { contract: unknownContract },
       request: {
         url: 'http://api.salo.com',
         method: 'POST' as const,
-        fetchOptions: {
+        fetch: {
           redirect: 'manual',
         },
       },

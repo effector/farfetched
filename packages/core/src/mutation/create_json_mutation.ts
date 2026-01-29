@@ -31,7 +31,7 @@ type RequestConfig<Params, BodySource, QuerySource, HeadersSource, UrlSource> =
   {
     url: SourcedField<Params, string, UrlSource>;
     credentials?: RequestCredentials;
-    fetchOptions?: StaticOrReactive<FetchOptions>;
+    fetch?: StaticOrReactive<FetchOptions>;
     query?:
       | SourcedField<Params, FetchApiRecord, QuerySource>
       | SourcedField<Params, string, QuerySource>;
@@ -228,11 +228,11 @@ export function createJsonMutation<
 export function createJsonMutation(config: any): Mutation<any, any, any> {
   const credentials: RequestCredentials | undefined =
     config.request.credentials;
-  const fetchOptions: StaticOrReactive<FetchOptions> | undefined =
-    config.request.fetchOptions;
+  const fetch: StaticOrReactive<FetchOptions> | undefined =
+    config.request.fetch;
 
   const requestFx = createJsonApiRequest({
-    request: { method: config.request.method, credentials, fetchOptions },
+    request: { method: config.request.method, credentials, fetch },
     response: { status: config.response.status },
   });
 

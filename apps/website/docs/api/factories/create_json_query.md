@@ -22,7 +22,7 @@ Config fields:
     - `omit` — do not include credentials
     - `same-origin` — include credentials only if the request URL is the same origin
     - `include` — include credentials on all requests
-  - `fetchOptions?`: <Badge type="tip" text="since v0.14.3" /> _Object or [Store](https://effector.dev/docs/api/effector/Store) with Object_, additional [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request#options) options to pass to the underlying fetch request. This allows configuring options like `mode`, `cache`, `redirect`, `referrerPolicy`, `integrity`, `keepalive`, etc. If `credentials` is specified both at the top level and in `fetchOptions`, the top-level value takes precedence.
+  - `fetch?`: <Badge type="tip" text="since v0.14.3" /> _Object or [Store](https://effector.dev/docs/api/effector/Store) with Object_, additional [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request#options) options to pass to the underlying fetch request. This allows configuring options like `mode`, `cache`, `redirect`, `referrerPolicy`, `integrity`, `keepalive`, etc. If `credentials` is specified both at the top level and in `fetch`, the top-level value takes precedence.
 
 - `response`: declarative rules to handle response from the API.
   - `contract`: [_Contract_](/api/primitives/contract) allows you to validate the response and decide how your application should treat it — as a success response or as a failed one.

@@ -49,7 +49,7 @@ export interface StaticOnlyRequestConfig<B> {
 export interface ExclusiveRequestConfigShared {
   url: string;
   credentials?: RequestCredentials;
-  fetchOptions?: FetchOptions;
+  fetch?: FetchOptions;
   abortController?: AbortController;
 }
 
@@ -146,20 +146,20 @@ export function createApiRequest<
       query,
       headers,
       credentials,
-      fetchOptions,
+      fetch,
       body,
       abortController,
     }) => {
       const mappedBody = body ? config.request.mapBody(body) : null;
 
       const request = new Request(formatUrl(url, query), {
-        ...fetchOptions,
+        ...fetch,
         method,
         headers: formatHeaders(headers),
         body: mappedBody,
         signal: abortController?.signal,
         /**
-         * `credentials` is available both in `fetchOptions` and in the top-level config.
+         * `credentials` is available both in `fetch` and in the top-level config.
          * The top-level config was introduced much earlier, so it takes precedence.
          */
         ...(credentials !== undefined ? { credentials } : {}),
@@ -253,7 +253,7 @@ export function createApiRequest<
       query: normalizeStaticOrReactive(config.request.query),
       headers: normalizeStaticOrReactive(config.request.headers),
       credentials: normalizeStaticOrReactive(config.request.credentials),
-      fetchOptions: normalizeStaticOrReactive(config.request.fetchOptions),
+      fetch: normalizeStaticOrReactive(config.request.fetch),
       body: normalizeStaticOrReactive(config.request.body),
     },
     mapParams(dynamicConfig: ApiRequestParams, staticConfig) {
@@ -269,10 +269,10 @@ export function createApiRequest<
         // @ts-expect-error TS cannot infer type correctly, but there is always field in staticConfig or dynamicConfig
         dynamicConfig.credentials;
 
-      const fetchOptions: FetchOptions | undefined =
-        staticConfig.fetchOptions ??
+      const fetch: FetchOptions | undefined =
+        staticConfig.fetch ??
         // @ts-expect-error TS cannot infer type correctly, but there is always field in staticConfig or dynamicConfig
-        dynamicConfig.fetchOptions;
+        dynamicConfig.fetch;
 
       const body: B =
         staticConfig.body ??
@@ -295,7 +295,7 @@ export function createApiRequest<
         query,
         headers,
         credentials,
-        fetchOptions,
+        fetch,
         body,
         abortController,
       };

@@ -31,7 +31,7 @@ type RequestConfig<Params, BodySource, QuerySource, HeadersSource, UrlSource> =
   {
     url: SourcedField<Params, string, UrlSource>;
     credentials?: RequestCredentials;
-    fetchOptions?: StaticOrReactive<FetchOptions>;
+    fetch?: StaticOrReactive<FetchOptions>;
     query?:
       | SourcedField<Params, FetchApiRecord, QuerySource>
       | SourcedField<Params, string, QuerySource>;
@@ -362,15 +362,15 @@ export function createJsonQuery<
 export function createJsonQuery(config: any) {
   const credentials: RequestCredentials | undefined =
     config.request.credentials;
-  const fetchOptions: StaticOrReactive<FetchOptions> | undefined =
-    config.request.fetchOptions;
+  const fetch: StaticOrReactive<FetchOptions> | undefined =
+    config.request.fetch;
 
   // Basement
   const requestFx = createJsonApiRequest({
     request: {
       method: config.request.method,
       credentials,
-      fetchOptions,
+      fetch,
     },
   });
 
