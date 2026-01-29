@@ -231,6 +231,12 @@ export function createJsonMutation(config: any): Mutation<any, any, any> {
   const fetch: StaticOrReactive<FetchOptions> | undefined =
     config.request.fetch;
 
+  if (credentials !== undefined) {
+    console.warn(
+      'Farfetched: `request.credentials` is deprecated, use `request.fetch.credentials` instead'
+    );
+  }
+
   const requestFx = createJsonApiRequest({
     request: { method: config.request.method, credentials, fetch },
     response: { status: config.response.status },

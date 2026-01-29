@@ -365,6 +365,12 @@ export function createJsonQuery(config: any) {
   const fetch: StaticOrReactive<FetchOptions> | undefined =
     config.request.fetch;
 
+  if (credentials !== undefined) {
+    console.warn(
+      'Farfetched: `request.credentials` is deprecated, use `request.fetch.credentials` instead'
+    );
+  }
+
   // Basement
   const requestFx = createJsonApiRequest({
     request: {
