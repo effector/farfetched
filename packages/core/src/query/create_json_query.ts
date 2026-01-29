@@ -2,7 +2,12 @@ import { attach, createEffect, type Json } from 'effector';
 
 import { type Contract } from '../contract/type';
 import { createJsonApiRequest } from '../fetch/json';
-import { type HttpMethod, type JsonApiRequestError } from '../fetch/api';
+import {
+  type HttpMethod,
+  type JsonApiRequestError,
+  type FetchOptions,
+} from '../fetch/api';
+import { type StaticOrReactive } from '../libs/patronus';
 import {
   normalizeSourced,
   type SourcedField,
@@ -26,6 +31,7 @@ type RequestConfig<Params, BodySource, QuerySource, HeadersSource, UrlSource> =
   {
     url: SourcedField<Params, string, UrlSource>;
     credentials?: RequestCredentials;
+    fetch?: StaticOrReactive<FetchOptions>;
     query?:
       | SourcedField<Params, FetchApiRecord, QuerySource>
       | SourcedField<Params, string, QuerySource>;
@@ -356,12 +362,21 @@ export function createJsonQuery<
 export function createJsonQuery(config: any) {
   const credentials: RequestCredentials | undefined =
     config.request.credentials;
+  const fetch: StaticOrReactive<FetchOptions> | undefined =
+    config.request.fetch;
+
+  if (credentials !== undefined) {
+    console.warn(
+      'Farfetched: `request.credentials` is deprecated, use `request.fetch.credentials` instead'
+    );
+  }
 
   // Basement
   const requestFx = createJsonApiRequest({
     request: {
       method: config.request.method,
       credentials,
+      fetch,
     },
   });
 

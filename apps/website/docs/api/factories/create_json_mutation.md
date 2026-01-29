@@ -16,10 +16,11 @@ Config fields:
   - `body`: _[Sourced](/api/primitives/sourced) Json_, any value which can be serialized to JSON and parsed back without loses by JavaScript native module JSON. For example, `{ a: 1, b: 2 }`. Note that body cannot be used in `GET` and `HEAD` requests.
   - `query?`: _[Sourced](/api/primitives/sourced) object_, keys of the object must be `String` and values must be `String` or `Array<String>` or (since v0.8) _[Sourced](/api/primitives/sourced) String_ containing ready-to-use query string
   - `headers?`: _[Sourced](/api/primitives/sourced) object_, keys of the object must be `String` and values must be `String` or `Array<String>`
-  - `credentials?`: <Badge type="tip" text="since v0.7" /> _String_, [available values](https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials):
+  - `credentials?`: <Badge type="warning" text="deprecated" /> _String_, [available values](https://developer.mozilla.org/en-US/docs/Web/API/Request/credentials). **Deprecated**: use `fetch.credentials` instead.
     - `omit` — do not include credentials
     - `same-origin` — include credentials only if the request URL is the same origin
     - `include` — include credentials on all requests
+  - `fetch?`: <Badge type="tip" text="since v0.14.3" /> _Object or [Store](https://effector.dev/docs/api/effector/Store) with Object_, additional [RequestInit](https://developer.mozilla.org/en-US/docs/Web/API/Request/Request#options) options to pass to the underlying fetch request. This allows configuring options like `mode`, `cache`, `redirect`, `referrerPolicy`, `integrity`, `keepalive`, etc. If `credentials` is specified both at the top level and in `fetch`, the top-level value takes precedence.
 
 - `response`: declarative rules to handle response from the API.
   - `contract`: [_Contract_](/api/primitives/contract) allows you to validate the response and decide how your application should treat it — as a success response or as a failed one.

@@ -33,6 +33,12 @@ export type HttpMethod =
 
 export type RequestBody = Blob | BufferSource | FormData | string;
 
+// Future-proof: automatically includes any new RequestInit fields from the browser
+export type FetchOptions = Omit<
+  RequestInit,
+  'method' | 'headers' | 'body' | 'signal'
+>;
+
 // These settings can be defined only statically
 export interface StaticOnlyRequestConfig<B> {
   method: StaticOrReactive<HttpMethod>;
@@ -43,6 +49,7 @@ export interface StaticOnlyRequestConfig<B> {
 export interface ExclusiveRequestConfigShared {
   url: string;
   credentials?: RequestCredentials;
+  fetch?: FetchOptions;
   abortController?: AbortController;
 }
 
@@ -139,17 +146,23 @@ export function createApiRequest<
       query,
       headers,
       credentials,
+      fetch,
       body,
       abortController,
     }) => {
       const mappedBody = body ? config.request.mapBody(body) : null;
 
       const request = new Request(formatUrl(url, query), {
+        ...fetch,
         method,
         headers: formatHeaders(headers),
-        credentials,
         body: mappedBody,
         signal: abortController?.signal,
+        /**
+         * `credentials` is available both in `fetch` and in the top-level config.
+         * The top-level config was introduced much earlier, so it takes precedence.
+         */
+        ...(credentials !== undefined ? { credentials } : {}),
       });
 
       const response = await requestFx(request).catch((cause: RequestError) => {
@@ -240,6 +253,7 @@ export function createApiRequest<
       query: normalizeStaticOrReactive(config.request.query),
       headers: normalizeStaticOrReactive(config.request.headers),
       credentials: normalizeStaticOrReactive(config.request.credentials),
+      fetch: normalizeStaticOrReactive(config.request.fetch),
       body: normalizeStaticOrReactive(config.request.body),
     },
     mapParams(dynamicConfig: ApiRequestParams, staticConfig) {
@@ -250,10 +264,15 @@ export function createApiRequest<
         // @ts-expect-error TS cannot infer type correctly, but there is always field in staticConfig or dynamicConfig
         dynamicConfig.url;
 
-      const credentials: RequestCredentials =
+      const credentials: RequestCredentials | undefined =
         staticConfig.credentials ??
         // @ts-expect-error TS cannot infer type correctly, but there is always field in staticConfig or dynamicConfig
         dynamicConfig.credentials;
+
+      const fetch: FetchOptions | undefined =
+        staticConfig.fetch ??
+        // @ts-expect-error TS cannot infer type correctly, but there is always field in staticConfig or dynamicConfig
+        dynamicConfig.fetch;
 
       const body: B =
         staticConfig.body ??
@@ -276,6 +295,7 @@ export function createApiRequest<
         query,
         headers,
         credentials,
+        fetch,
         body,
         abortController,
       };

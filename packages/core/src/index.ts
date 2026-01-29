@@ -68,7 +68,7 @@ export { type ValidationResult, type Validator } from './validation/type';
 export { type Json } from 'effector';
 export { type JsonObject } from './fetch/json';
 export { type FetchApiRecord } from './fetch/lib';
-export { type JsonApiRequestError } from './fetch/api';
+export { type JsonApiRequestError, type FetchOptions } from './fetch/api';
 export { fetchFx } from './fetch/fetch';
 
 // Exposed errors
