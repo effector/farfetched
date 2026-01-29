@@ -77,7 +77,7 @@ export default withMermaid(
         '/tutorial': [
           {
             text: 'Thorough Tutorial',
-            collapsed: false,
+            collapsed: true,
             items: [
               { text: 'Get started', link: '/tutorial/' },
               { text: 'Installation', link: '/tutorial/install' },
@@ -143,21 +143,64 @@ export default withMermaid(
             ],
           },
           {
-            text: 'Solid',
+            text: 'With UI-libs',
             collapsed: true,
             items: [
-              { text: 'Get started', link: '/tutorial/solid/' },
-              { text: 'Suspense', link: '/tutorial/solid/suspense' },
-              { text: 'SSR and Testing', link: '/tutorial/solid/scope' },
+              {
+                text: 'Solid',
+                collapsed: true,
+                items: [
+                  { text: 'Get started', link: '/tutorial/solid/' },
+                  { text: 'Suspense', link: '/tutorial/solid/suspense' },
+                  { text: 'SSR and Testing', link: '/tutorial/solid/scope' },
+                ],
+              },
+              {
+                text: 'React',
+                collapsed: true,
+                items: [
+                  { text: 'Get started', link: '/tutorial/react/' },
+                  { text: 'Suspense', link: '/tutorial/react/suspense' },
+                  { text: 'SSR and Testing', link: '/tutorial/react/scope' },
+                ],
+              },
             ],
           },
           {
-            text: 'React',
+            text: 'Migration',
             collapsed: true,
             items: [
-              { text: 'Get started', link: '/tutorial/react/' },
-              { text: 'Suspense', link: '/tutorial/react/suspense' },
-              { text: 'SSR and Testing', link: '/tutorial/react/scope' },
+              {
+                text: 'from Effects',
+                link: '/tutorial/migrate/effector/',
+                collapsed: true,
+                items: [
+                  {
+                    text: '1. Wrap existing Effects',
+                    link: '/tutorial/migrate/effector/wrap',
+                  },
+                  {
+                    text: '2. Use add-ons',
+                    link: '/tutorial/migrate/effector/addons',
+                  },
+                  {
+                    text: '3. Add Contracts',
+                    link: '/tutorial/migrate/effector/contracts',
+                  },
+                  {
+                    text: '4. Use specific factories',
+                    link: '/tutorial/migrate/effector/specific_factories',
+                  },
+                  {
+                    text: '5. Use Trigger API',
+                    link: '/tutorial/migrate/effector/trigger_api',
+                  },
+                  {
+                    text: '6. Next steps',
+                    link: '/tutorial/migrate/effector/next',
+                  },
+                ],
+              },
             ],
           },
         ],

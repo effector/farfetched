@@ -94,5 +94,7 @@ Pretty cool, right? We love it, and we hope you will too. Read on to learn more 
 
 - Learn Farfetched at your own pace with our amazingly [Thorough Tutorial](/tutorial/install)
 - Read framework-specific recommendations for [Solid](/tutorial/solid/) and [React](/tutorial/react/)
+- Learn about step-by-step adoption of Farfetched for existing applications which uses different tools for data fetching:
+  - [Effector's _Effects_](/tutorial/migrate/effector/)
 - See the whole picture in [API reference](/api/)
 - Check out Farfetched's [roadmap](/roadmap) to stay in the same wavelength with us
