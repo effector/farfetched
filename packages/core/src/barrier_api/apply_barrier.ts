@@ -8,10 +8,14 @@ import { type Barrier } from './type';
  *
  * @param operation Query or Mutation to apply Barrier to
  * @param config.barrier Barrier to apply
+ * @param config.suppressIntermediateFailures Whether to suppress intermediate failures or not, defaults to `false`
  */
 export function applyBarrier(
   operation: RemoteOperation<any, any, any, any, any>,
-  { barrier }: { barrier: Barrier }
+  {
+    barrier,
+    suppressIntermediateFailures,
+  }: { barrier: Barrier; suppressIntermediateFailures?: boolean }
 ): void;
 
 /**
@@ -19,17 +23,24 @@ export function applyBarrier(
  *
  * @param operations Query or Mutation to apply Barrier to
  * @param config.barrier Barrier to apply
+ * @param config.suppressIntermediateFailures Whether to suppress intermediate failures or not, defaults to `false`
  */
 export function applyBarrier(
   operations: RemoteOperation<any, any, any, any, any>[],
-  { barrier }: { barrier: Barrier }
+  {
+    barrier,
+    suppressIntermediateFailures,
+  }: { barrier: Barrier; suppressIntermediateFailures?: boolean }
 ): void;
 
 export function applyBarrier(
   operation:
     | RemoteOperation<any, any, any, any, any>
     | RemoteOperation<any, any, any, any, any>[],
-  { barrier }: { barrier: Barrier }
+  {
+    barrier,
+    suppressIntermediateFailures = false,
+  }: { barrier: Barrier; suppressIntermediateFailures?: boolean }
 ): void {
   if (Array.isArray(operation)) {
     for (const op of operation) {

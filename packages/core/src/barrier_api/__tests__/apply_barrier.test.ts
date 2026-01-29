@@ -132,4 +132,49 @@ describe('applyBarrier', () => {
 
     expect(performer).toBeCalledTimes(1);
   });
+
+  test.concurrent(
+    'suppress intermediate failure on operation fail',
+    async () => {
+      const defer = createDefer();
+
+      const renewTokenFx = createEffect(() => defer.promise);
+
+      const authBarrier = createBarrier({
+        activateOn: { failure: isHttpErrorCode(401) },
+        perform: [renewTokenFx],
+      });
+
+      const query = createQuery({
+        handler: vi
+          .fn()
+          .mockRejectedValueOnce(
+            httpError({ status: 401, statusText: 'Nooo', response: null })
+          )
+          .mockResolvedValueOnce('OK'),
+      });
+
+      applyBarrier(query, {
+        barrier: authBarrier,
+        suppressIntermediateFailures: true,
+      });
+
+      const scope = fork();
+
+      const { listeners } = watchRemoteOperation(query, scope);
+
+      allSettled(query.refresh, { scope });
+      await setTimeout(1);
+      expect(scope.getState(authBarrier.$active)).toBeTruthy();
+
+      defer.resolve(null);
+      await allSettled(scope);
+      expect(scope.getState(authBarrier.$active)).toBeFalsy();
+      expect(listeners.onFailure).toBeCalledTimes(0);
+      expect(listeners.onSuccess).toBeCalledTimes(1);
+      expect(listeners.onSuccess).toBeCalledWith(
+        expect.objectContaining({ result: 'OK' })
+      );
+    }
+  );
 });
