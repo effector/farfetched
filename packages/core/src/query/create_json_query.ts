@@ -2,7 +2,12 @@ import { attach, createEffect, type Json } from 'effector';
 
 import { type Contract } from '../contract/type';
 import { createJsonApiRequest } from '../fetch/json';
-import { type HttpMethod, type JsonApiRequestError } from '../fetch/api';
+import {
+  type HttpMethod,
+  type JsonApiRequestError,
+  type FetchOptions,
+} from '../fetch/api';
+import { type StaticOrReactive } from '../libs/patronus';
 import {
   normalizeSourced,
   type SourcedField,
@@ -26,6 +31,7 @@ type RequestConfig<Params, BodySource, QuerySource, HeadersSource, UrlSource> =
   {
     url: SourcedField<Params, string, UrlSource>;
     credentials?: RequestCredentials;
+    fetchOptions?: StaticOrReactive<FetchOptions>;
     query?:
       | SourcedField<Params, FetchApiRecord, QuerySource>
       | SourcedField<Params, string, QuerySource>;
@@ -356,12 +362,15 @@ export function createJsonQuery<
 export function createJsonQuery(config: any) {
   const credentials: RequestCredentials | undefined =
     config.request.credentials;
+  const fetchOptions: StaticOrReactive<FetchOptions> | undefined =
+    config.request.fetchOptions;
 
   // Basement
   const requestFx = createJsonApiRequest({
     request: {
       method: config.request.method,
       credentials,
+      fetchOptions,
     },
   });
 

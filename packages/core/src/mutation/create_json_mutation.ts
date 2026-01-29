@@ -2,13 +2,18 @@ import { attach, type Json, createEffect } from 'effector';
 
 import { type Contract } from '../contract/type';
 import { unknownContract } from '../contract/unknown_contract';
-import { type HttpMethod, type JsonApiRequestError } from '../fetch/api';
+import {
+  type HttpMethod,
+  type JsonApiRequestError,
+  type FetchOptions,
+} from '../fetch/api';
 import { createJsonApiRequest } from '../fetch/json';
 import { type FetchApiRecord } from '../fetch/lib';
 import { type ParamsDeclaration } from '../remote_operation/params';
 import {
   type DynamicallySourcedField,
   type SourcedField,
+  type StaticOrReactive,
   normalizeSourced,
 } from '../libs/patronus';
 import { type Validator } from '../validation/type';
@@ -26,6 +31,7 @@ type RequestConfig<Params, BodySource, QuerySource, HeadersSource, UrlSource> =
   {
     url: SourcedField<Params, string, UrlSource>;
     credentials?: RequestCredentials;
+    fetchOptions?: StaticOrReactive<FetchOptions>;
     query?:
       | SourcedField<Params, FetchApiRecord, QuerySource>
       | SourcedField<Params, string, QuerySource>;
@@ -222,9 +228,11 @@ export function createJsonMutation<
 export function createJsonMutation(config: any): Mutation<any, any, any> {
   const credentials: RequestCredentials | undefined =
     config.request.credentials;
+  const fetchOptions: StaticOrReactive<FetchOptions> | undefined =
+    config.request.fetchOptions;
 
   const requestFx = createJsonApiRequest({
-    request: { method: config.request.method, credentials },
+    request: { method: config.request.method, credentials, fetchOptions },
     response: { status: config.response.status },
   });
 
