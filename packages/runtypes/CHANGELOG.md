@@ -1,5 +1,12 @@
 # @farfetched/runtypes
 
+## 0.15.0
+
+### Patch Changes
+
+- Updated dependencies [d5b3011]
+  - @farfetched/core@0.15.0
+
 ## 0.14.2
 
 ### Patch Changes
