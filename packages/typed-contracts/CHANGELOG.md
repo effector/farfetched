@@ -1,5 +1,12 @@
 # @farfetched/typed-contracts
 
+## 1.0.0
+
+### Patch Changes
+
+- Updated dependencies [d5b3011]
+  - @farfetched/core@1.0.0
+
 ## 0.14.2
 
 ### Patch Changes
