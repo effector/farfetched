@@ -1,5 +1,13 @@
 # @farfetched/core
 
+## 0.15.0
+
+### Minor Changes
+
+- d5b3011: Added `request.fetch` feature to createJson\* methods, which allows to apply any valid `RequestInit` setting to underlying `fetch` call
+
+  The top-level `request.credentials` is deprecated in favor of `request.fetch.credentials`
+
 ## 0.14.2
 
 ### Patch Changes
