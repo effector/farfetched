@@ -122,7 +122,7 @@ const modifyKeyFx = attach({
 });
 
 const query = createQuery({
-  effect: createEffect(async () => fetch("/api/posts").json()),
+  effect: createEffect(async () => (await fetch("/api/posts")).json()),
 });
 
 cache(query, {
