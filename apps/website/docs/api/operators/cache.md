@@ -20,6 +20,7 @@ Config fields:
 - `staleAfter?`: [_Time_](/api/primitives/time) after which the data is considered stale and will be re-fetched immediately
 - `purge?`: [_Event_](https://effector.dev/en/api/effector/event/) after calling which all records will be deleted from the cache
 - `humanReadableKeys?`: <Badge type="tip" text="since v0.12" /> _boolean_ whether to use human-readable keys in the cache. Default is `false` and the key is not human-readable.
+- `modifyKey?`: [_Effect<string, string>_](https://effector.dev/en.effector/Effect/) keys modification (important: don't use for keys replacement).  
 
 ## Adapters
 

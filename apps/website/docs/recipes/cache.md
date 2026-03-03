@@ -104,6 +104,33 @@ To get short and unique key, we stringify all data, concatenate it and then hash
 It is a cryptographically broken, but we use it for key generation only, so it is safe to use it in this case.
 :::
 
+### Custom key modification
+
+Key modification based on already generated key. It can be useful for multiple cases: SSR, multiple account, localizations, environment variable or something else.
+For example, we can use localization with known store value: we know that cache must be related with your localization, but we don't need use localization key as query `params`, and we don't need purge already loaded (previous) locale.
+```ts
+import { attach } from "effector";
+import { createQuery, localStorageCache } from "@farfetched/core";
+
+const $locale = createStore("en");
+
+const modifyKeyFx = attach({
+  source: { locale: $locale },
+  effect: ({locale}, key: string) => {
+    return `${key}:lang_${locale}`;
+  },
+});
+
+const query = createQuery({
+  effect: createEffect(async () => fetch("/api/posts").json()),
+});
+
+cache(query, {
+  adapter: localStorageCache,
+  modifyKey: modifyKeyFx,
+});
+```
+
 ## Adapter replacement
 
 Sometimes it's necessary to replace current cache adapter with a different one. E.g. it's impossible to use `localStorage` on server-side during SSR, so you have to replace it with some in-memory adapter. To do this Farfetched provides a special property in every adapter `.__.$instance` that can be replaced via Fork API.
