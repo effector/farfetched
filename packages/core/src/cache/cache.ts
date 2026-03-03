@@ -1,4 +1,4 @@
-import { attach, createEffect, Event, sample } from 'effector';
+import { attach, createEffect, Effect, Event, sample } from 'effector';
 
 import { parseTime, type Time } from '../libs/date-nfs';
 import { type Query } from '../query/type';
@@ -12,6 +12,7 @@ interface CacheParameters {
   staleAfter?: Time;
   purge?: Event<void>;
   humanReadableKeys?: boolean;
+  modifyKey?: Effect<string, string>;
 }
 
 interface CacheParametersDefaulted {
@@ -19,6 +20,7 @@ interface CacheParametersDefaulted {
   staleAfter?: Time;
   purge?: Event<void>;
   humanReadableKeys: boolean;
+  modifyKey?: Effect<string, string>;
 }
 
 export function cache<Q extends Query<any, any, any, any>>(
@@ -30,6 +32,7 @@ export function cache<Q extends Query<any, any, any, any>>(
     staleAfter,
     purge,
     humanReadableKeys,
+    modifyKey,
   }: CacheParametersDefaulted = {
     adapter: rawParams?.adapter ?? inMemoryCache(),
     humanReadableKeys: false,
@@ -44,6 +47,8 @@ export function cache<Q extends Query<any, any, any, any>>(
   const readAllSourcedFx = createEffect(async (params: unknown) => {
     return Promise.all(sourcedReaders.map((readerFx) => readerFx(params)));
   });
+
+  const modifyKeyFx = createEffect<string, string>(modifyKey ?? ((key) => key));
 
   const unsetFx = createEffect<
     {
@@ -64,7 +69,9 @@ export function cache<Q extends Query<any, any, any, any>>(
       return;
     }
 
-    await instance.unset({ key });
+    const modifiedKey = await modifyKeyFx(key);
+
+    await instance.unset({ key: modifiedKey });
   });
 
   const setFx = createEffect<
@@ -88,7 +95,9 @@ export function cache<Q extends Query<any, any, any, any>>(
       return;
     }
 
-    await instance.set({ key, value: result });
+    const modifiedKey = await modifyKeyFx(key);
+
+    await instance.set({ key: modifiedKey, value: result });
   });
 
   const getFx = createEffect<
@@ -107,8 +116,9 @@ export function cache<Q extends Query<any, any, any, any>>(
     if (!key) {
       return null;
     }
+    const modifiedKey = await modifyKeyFx(key);
 
-    const result = await instance.get({ key });
+    const result = await instance.get({ key: modifiedKey });
 
     if (!result) {
       return null;
