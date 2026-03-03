@@ -1,4 +1,4 @@
-import { allSettled, createEffect, createEvent, fork } from 'effector';
+import { allSettled, createEffect, createEvent, createStore, attach, fork } from 'effector';
 import { setTimeout } from 'timers/promises';
 import { describe, vi, expect, test, beforeAll, afterAll } from 'vitest';
 
@@ -440,5 +440,68 @@ describe('cache', () => {
         ],
       ]
     `);
+  });
+
+  test('`modifyKey` method get/set correct key with dynamic external store', async () => {
+    const q = withFactory({
+      sid: 'test',
+      fn: () => createQuery({ handler: async (id: number) => id }),
+    });
+
+    const get = vi.fn();
+    const set = vi.fn();
+    const unset = vi.fn();
+
+    const myAdapter = createCacheAdapter({
+      get: createEffect(get),
+      set: createEffect(set),
+      purge: createEvent(),
+      unset: createEffect(unset),
+    });
+
+    const $dynamicKey = createStore(1)
+    const modifyKeyFx = attach({
+      source: { dynamicKey: $dynamicKey },
+      effect: ({dynamicKey}, key) => {
+        return `${key}:custom-postfix_${dynamicKey}`
+      },
+    });
+
+    cache(q, { humanReadableKeys: true, adapter: myAdapter, modifyKey: modifyKeyFx });
+
+    const scope = fork();
+
+    await allSettled($dynamicKey, { scope, params: 1 });
+    await allSettled(q.start, { scope, params: 1 });
+    await allSettled($dynamicKey, { scope, params: 2 });
+    await allSettled(q.start, { scope, params: 1 });
+
+    expect(set.mock.calls).toMatchInlineSnapshot(`
+      [
+        [
+          {
+            "key": "{"params":1,"sid":"test|dummy","sources":[]}:custom-postfix_1",
+            "value": 1,
+          },
+        ],
+        [
+          {
+            "key": "{"params":1,"sid":"test|dummy","sources":[]}:custom-postfix_2",
+            "value": 1,
+          },
+        ],
+      ]
+    `);
+
+    await allSettled($dynamicKey, { scope, params: 1 });
+    await allSettled(q.start, { scope, params: 1 });
+    console.log('calls',get.mock.calls.at(-1));
+    expect(get.mock.calls.at(-1)).toMatchInlineSnapshot(`
+      [
+        {
+          "key": "{"params":1,"sid":"test|dummy","sources":[]}:custom-postfix_1",
+        },
+      ]
+    `)
   });
 });
