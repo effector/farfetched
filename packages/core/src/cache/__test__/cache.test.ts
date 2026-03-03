@@ -475,6 +475,8 @@ describe('cache', () => {
     await allSettled(q.start, { scope, params: 1 });
     await allSettled($dynamicKey, { scope, params: 2 });
     await allSettled(q.start, { scope, params: 1 });
+    await allSettled($dynamicKey, { scope, params: 1 });
+    await allSettled(q.start, { scope, params: 1 });
 
     expect(set.mock.calls).toMatchInlineSnapshot(`
       [
@@ -490,18 +492,33 @@ describe('cache', () => {
             "value": 1,
           },
         ],
+        [
+          {
+            "key": "{"params":1,"sid":"test|dummy","sources":[]}:custom-postfix_1",
+            "value": 1,
+          },
+        ],
       ]
     `);
 
-    await allSettled($dynamicKey, { scope, params: 1 });
-    await allSettled(q.start, { scope, params: 1 });
-    console.log('calls',get.mock.calls.at(-1));
-    expect(get.mock.calls.at(-1)).toMatchInlineSnapshot(`
+    expect(get.mock.calls).toMatchInlineSnapshot(`
       [
-        {
-          "key": "{"params":1,"sid":"test|dummy","sources":[]}:custom-postfix_1",
-        },
+        [
+          {
+            "key": "{"params":1,"sid":"test|dummy","sources":[]}:custom-postfix_1",
+          },
+        ],
+        [
+          {
+            "key": "{"params":1,"sid":"test|dummy","sources":[]}:custom-postfix_2",
+          },
+        ],
+        [
+          {
+            "key": "{"params":1,"sid":"test|dummy","sources":[]}:custom-postfix_1",
+          },
+        ],
       ]
-    `)
+    `);
   });
 });
